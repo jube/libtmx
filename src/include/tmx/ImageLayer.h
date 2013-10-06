@@ -21,23 +21,42 @@
 
 namespace tmx {
 
+  /**
+   * @brief An image layer is a layer with a single image.
+   */
   class ImageLayer : public Layer {
   public:
+    /**
+     * @brief ImageLayer constructor
+     */
     ImageLayer(const std::string& name, double opacity, bool visible)
       : Layer(name, opacity, visible), m_image(nullptr)
     {
     }
 
-    virtual void accept(LayerVisitor& visitor);
-
+    /**
+     * @brief ImageLayer destructor
+     */
     ~ImageLayer() {
       delete m_image;
     }
 
+    virtual void accept(LayerVisitor& visitor);
+
+    /**
+     * @brief Assign the image for the layer.
+     *
+     * @param image the image
+     */
     void setImage(Image *image) {
       m_image = image;
     }
 
+    /**
+     * @brief Get the image assigned to the layer
+     *
+     * @returns the image
+     */
     const Image *getImage() const {
       return m_image;
     }

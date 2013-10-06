@@ -18,8 +18,17 @@
 
 #include "Map.h"
 
+/**
+ * @brief The namespace for all `libtmx` classes.
+ */
 namespace tmx {
 
+  /**
+   * @brief Parse a TMX file.
+   *
+   * @param filename the name of the TMX file
+   * @returns a map
+   */
   Map *parseMapFile(const char *filename);
 
 }

@@ -15,6 +15,13 @@ add_definitions(-Wall -g -O2 -std=c++11)
 
 add_subdirectory(lib)
 
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+  configure_file("${LIBTMX_SOURCE_DIR}/Doxyfile.cmake" "${LIBTMX_BINARY_DIR}/Doxyfile" @ONLY)
+  add_custom_target(doc ${DOXYGEN_EXECUTABLE} "${LIBTMX_BINARY_DIR}/Doxyfile")
+endif(DOXYGEN_FOUND)
+
 configure_file("${LIBTMX_SOURCE_DIR}/libtmx0.pc.in" "${LIBTMX_BINARY_DIR}/libtmx0.pc" @ONLY)
 install(
   FILES "${LIBTMX_BINARY_DIR}/libtmx0.pc"

@@ -18,25 +18,52 @@
 
 namespace tmx {
 
+  /**
+   * @brief A cell is a square on a map layer that is filled with a tile.
+   */
   class Cell {
   public:
+
+    /**
+     * @brief Cell constructor.
+     */
     Cell(unsigned gid, bool hflip = false, bool vflip = false, bool dflip = false)
       : m_gid(gid), m_hflip(hflip), m_vflip(vflip), m_dflip(dflip)
     {
     }
 
+    /**
+     * @brief Get the global id of the tile.
+     *
+     * @returns the global id of the tile.
+     */
     unsigned getGID() const {
       return m_gid;
     }
 
+    /**
+     * @brief Tell whether the tile must be flipped horizontally.
+     *
+     * @returns true if the tile must be flipped horizontally
+     */
     bool isHorizontallyFlipped() const {
       return m_hflip;
     }
 
+    /**
+     * @brief Tell whether the tile must be flipped vertically.
+     *
+     * @returns true if the tile must be flipped vertically
+     */
     bool isVerticallyFlipped() const {
       return m_vflip;
     }
 
+    /**
+     * @brief Tell whether the tile must be flipped diagonally.
+     *
+     * @returns true if the tile must be flipped diagonally
+     */
     bool isDiagonallyFlipped() const {
       return m_dflip;
     }

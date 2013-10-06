@@ -21,25 +21,56 @@
 namespace tmx {
   class LayerVisitor;
 
+  /**
+   * @brief A layer is a layer in the whole map.
+   *
+   * There are three kinds of layers: image layers, tile layers and object layers.
+   */
   class Layer : public Base {
   public:
+    /**
+     * @brief Layer constructor.
+     */
     Layer(const std::string& name, double opacity, bool visible)
       : m_name(name), m_opacity(opacity), m_visible(visible)
     {
     }
 
+    /**
+     * @brief Layer destructor.
+     */
     virtual ~Layer();
 
+    /**
+     * @brief Accept function in the visitor pattern
+     *
+     * @param visitor the visitor
+     */
     virtual void accept(LayerVisitor& visitor) = 0;
 
+    /**
+     * @brief Get the name of the layer.
+     *
+     * @returns the name of the layer
+     */
     const std::string& getName() const {
       return m_name;
     }
 
+    /**
+     * @brief Get the opacity of the layer.
+     *
+     * @returns the opacity of the layer (0.0 is transparent, 1.0 is opaque)
+     */
     double getOpacity() const {
       return m_opacity;
     }
 
+    /**
+     * @brief Tell whether the layer is visible.
+     *
+     * @returns true if the layer is visible
+     */
     bool isVisible() const {
       return m_visible;
     }

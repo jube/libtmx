@@ -22,17 +22,33 @@
 
 namespace tmx {
 
+  /**
+   * @brief A terrain describes a kind of terrain on the map.
+   */
   class Terrain : public Base {
   public:
+    /**
+     * @brief Terrain constructor.
+     */
     Terrain(const std::string& name, unsigned tile)
       : m_name(name), m_tile(tile)
     {
     }
 
+    /**
+     * @brief Get the name of the terrain.
+     *
+     * @returns the name of the terrain
+     */
     const std::string& getName() const {
       return m_name;
     }
 
+    /**
+     * @brief Get the representing tile for the terrain.
+     *
+     * @returns the representing tile
+     */
     unsigned getTile() const {
       return m_tile;
     }

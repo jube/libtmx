@@ -23,8 +23,14 @@
 
 namespace tmx {
 
+  /**
+   * @brief A tile layer is a layer with tiles in cells.
+   */
   class TileLayer : public Layer {
   public:
+    /**
+     * @brief TileLayer constructor.
+     */
     TileLayer(const std::string& name, double opacity, bool visible)
       : Layer(name, opacity, visible)
     {
@@ -32,16 +38,34 @@ namespace tmx {
 
     virtual void accept(LayerVisitor& visitor);
 
+    /**
+     * @brief Add a cell to the layer.
+     *
+     * @param cell the cell
+     */
     void addCell(Cell cell) {
       m_cells.emplace_back(cell);
     }
 
+    /**
+     * @brief A cell iterator.
+     */
     typedef typename std::vector<Cell>::const_iterator const_iterator;
 
+    /**
+     * @brief Get the begin iterator on the cells.
+     *
+     * @return the begin iterator
+     */
     const_iterator begin() {
       return m_cells.cbegin();
     }
 
+    /**
+     * @brief Get the end iterator on the cells.
+     *
+     * @return the end iterator
+     */
     const_iterator end() {
       return m_cells.cend();
     }

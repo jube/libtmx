@@ -23,13 +23,24 @@
 
 namespace tmx {
 
+  /**
+   * @brief An object layer is a layers composed of objects.
+   *
+   * An object layer is called object group in the TMX format.
+   */
   class ObjectLayer : public Layer {
   public:
+    /**
+     * @brief ObjectLayer constructor.
+     */
     ObjectLayer(const std::string& name, double opacity, bool visible, const std::string& color)
       : Layer(name, opacity, visible), m_color(color)
     {
     }
 
+    /**
+     * @brief ObjectLayer destructor.
+     */
     ~ObjectLayer() {
       for (auto item : m_objects) {
         delete item;
@@ -38,20 +49,43 @@ namespace tmx {
 
     virtual void accept(LayerVisitor& visitor);
 
+    /**
+     * @brief Get the color used to display the objects.
+     *
+     * @return the color to display the objects
+     */
     const std::string& getColor() {
       return m_color;
     }
 
+    /**
+     * @brief Add an object.
+     *
+     * @param obj the object
+     */
     void addObject(Object *obj) {
       m_objects.emplace_back(obj);
     }
 
+    /**
+     * @brief An object iterator.
+     */
     typedef std::vector<Object*>::const_iterator iterator;
 
+    /**
+     * @brief Get the begin iterator on the objects.
+     *
+     * @return the begin iterator
+     */
     iterator begin() const {
       return m_objects.cbegin();
     }
 
+    /**
+     * @brief Get the end iterator on the objects.
+     *
+     * @return the end iterator
+     */
     iterator end() const {
       return m_objects.cend();
     }

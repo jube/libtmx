@@ -23,53 +23,112 @@
 
 namespace tmx {
 
+  /**
+   * @brief A tile is a rectangular part of a tileset.
+   */
   class Tile : public Base {
   public:
+    /**
+     * @brief Tile constructor.
+     */
     Tile(unsigned id, const std::array<unsigned, 4>& terrain, unsigned probability)
       : m_id(id), m_terrain(terrain), m_probability(probability), m_image(nullptr)
     {
     }
 
+    /**
+     * @brief Tile destructor.
+     */
     ~Tile() {
       delete m_image;
     }
 
+    /**
+     * @brief Get the local id of the tile.
+     *
+     * @return the local id of the tile
+     */
     unsigned getId() const {
       return m_id;
     }
 
+    /**
+     * @brief Get the terrains on the four corners.
+     *
+     * @returns the terrains
+     */
     const std::array<unsigned, 4>& getTerrain() const {
       return m_terrain;
     }
 
+    /**
+     * @brief Get the terrain in the top left corner.
+     *
+     * @return the terrain in the top left corner
+     */
     unsigned getTopLeftTerrain() const {
       return m_terrain[0];
     }
 
+    /**
+     * @brief Get the terrain in the top right corner.
+     *
+     * @return the terrain in the top right corner
+     */
     unsigned getTopRightTerrain() const {
       return m_terrain[1];
     }
 
+    /**
+     * @brief Get the terrain in the bottom left corner.
+     *
+     * @return the terrain in the bottom left corner
+     */
     unsigned getBottomLeftTerrain() const {
       return m_terrain[2];
     }
 
+    /**
+     * @brief Get the terrain in the bottom right corner.
+     *
+     * @return the terrain in the bottom right corner
+     */
     unsigned getBottomRightTerrain() const {
       return m_terrain[3];
     }
 
+    /**
+     * @brief Get the probability of this tile.
+     *
+     * @return the probability of this tile
+     */
     unsigned getProbability() const {
       return m_probability;
     }
 
+    /**
+     * @brief Get the image of this tile.
+     *
+     * @param image the image of this tile
+     */
     void setImage(Image *image) {
       m_image = image;
     }
 
+    /**
+     * @brief Tell whether the tile has an image.
+     *
+     * @returns true if the tile has an image (generally false)
+     */
     bool hasImage() const {
       return m_image != nullptr;
     }
 
+    /**
+     * @brief Get the image of this tile.
+     *
+     * @returns the image of this tile
+     */
     const Image *getImage() const {
       return m_image;
     }

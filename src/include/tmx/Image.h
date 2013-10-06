@@ -22,30 +22,61 @@
 
 namespace tmx {
 
+  /**
+   * @brief An image is an image file on the system.
+   */
   class Image {
   public:
+    /**
+     * @brief Image constructor.
+     */
     Image(const std::string& format, const boost::filesystem::path& source, const std::string& trans,
         unsigned width, unsigned height)
       : m_format(format), m_source(source), m_trans(trans), m_width(width), m_height(height)
     {
     }
 
+    /**
+     * @brief Get the format of the file (if provided).
+     *
+     * @returns the format of the file or empty string.
+     */
     const std::string& getFormat() const {
       return m_format;
     }
 
+    /**
+     * @brief Get the path to the image file.
+     *
+     * @returns the path to the image file
+     */
     const boost::filesystem::path& getSource() const {
       return m_source;
     }
 
+    /**
+     * @brief Get the transparent color (if provided)
+     *
+     * @returns the transparent color
+     */
     const std::string getTransparent() const {
       return m_trans;
     }
 
+    /**
+     * @brief Get the width of the image (if provided)
+     *
+     * @returns the width of the image
+     */
     unsigned getWidth() const {
       return m_width;
     }
 
+    /**
+     * @brief Get the height of the image (if provided)
+     *
+     * @returns the height of the image
+     */
     unsigned getHeight() const {
       return m_height;
     }

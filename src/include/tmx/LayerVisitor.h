@@ -21,12 +21,35 @@ namespace tmx {
   class ObjectLayer;
   class ImageLayer;
 
+  /**
+   * @brief A layer visitor is a visitor for layers in the visitor pattern.
+   */
   class LayerVisitor {
   public:
+    /**
+     * @brief LayerVisitor destructor.
+     */
     virtual ~LayerVisitor();
 
+    /**
+     * @brief Visit a tile layer.
+     *
+     * @param layer the tile layer
+     */
     virtual void visitTileLayer(TileLayer& layer);
+
+    /**
+     * @brief Visit an object layer.
+     *
+     * @param layer the object layer
+     */
     virtual void visitObjectLayer(ObjectLayer& layer);
+
+    /**
+     * @brief Visit an image layer.
+     *
+     * @param layer the image layer
+     */
     virtual void visitImageLayer(ImageLayer& layer);
   };
 

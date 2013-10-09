@@ -16,6 +16,8 @@
 #ifndef TMX_TMX_H
 #define TMX_TMX_H
 
+#include <boost/filesystem.hpp>
+
 #include "Map.h"
 
 /**
@@ -29,7 +31,7 @@ namespace tmx {
    * @param filename the name of the TMX file
    * @returns a map
    */
-  Map *parseMapFile(const char *filename);
+  Map *parseMapFile(const boost::filesystem::path& filename);
 
 }
 

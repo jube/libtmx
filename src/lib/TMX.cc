@@ -25,7 +25,6 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/filesystem.hpp>
 
 #include <tinyxml2.h>
 #include <zlib.h>
@@ -708,7 +707,7 @@ namespace tmx {
         return map;
       }
 
-      Parser(const std::string& filename) : map_path(filename) { }
+      Parser(const boost::filesystem::path& filename) : map_path(filename) { }
 
       Map *parse() {
         if (!fs::is_regular_file(map_path)) {
@@ -737,7 +736,7 @@ namespace tmx {
 
   }
 
-  Map *parseMapFile(const char *filename) {
+  Map *parseMapFile(const boost::filesystem::path& filename) {
     Parser parser(filename);
     return parser.parse();
   }

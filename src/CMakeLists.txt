@@ -7,6 +7,7 @@ include(CPackConfig.cmake)
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(TINYXML2 REQUIRED tinyxml2)
+pkg_check_modules(SFML2 sfml-graphics)
 
 find_package(ZLIB REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
@@ -14,6 +15,10 @@ find_package(Boost REQUIRED COMPONENTS filesystem system)
 add_definitions(-Wall -g -O2 -std=c++11)
 
 add_subdirectory(lib)
+
+if(SFML2_FOUND)
+  add_subdirectory(bin)
+endif()
 
 find_package(Doxygen)
 

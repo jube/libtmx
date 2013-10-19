@@ -404,8 +404,13 @@ namespace tmx {
           boost::algorithm::split(coords, item, boost::algorithm::is_any_of(","));
 
           assert(coords.size() == 2);
+#if __cplusplus >= 201103L
           int x = std::stoi(coords[0]);
           int y = std::stoi(coords[1]);
+#else
+          int x = std::strtol(coords[0].c_str(), nullptr, 0);
+          int y = std::strtol(coords[1].c_str(), nullptr, 0);
+#endif
 
           ret.push_back({ x, y });
         }
@@ -523,7 +528,11 @@ namespace tmx {
                 boost::algorithm::split(items, csv, boost::algorithm::is_any_of(","));
 
                 for (auto item : items) {
+#if __cplusplus >= 201103L
                   unsigned gid = std::stoul(item);
+#else
+                  unsigned gid = std::strtoul(item.c_str(), nullptr, 0);
+#endif
                   layer->addCell({ gid });
                 }
               }
@@ -555,7 +564,11 @@ namespace tmx {
           unsigned t = 0;
           for (auto item : items) {
             if (!item.empty()) {
+#if __cplusplus >= 201103L
               terrain[t++] = std::stoul(item);
+#else
+              terrain[t++] = std::strtoul(item.c_str(), nullptr, 0);
+#endif
             }
           }
         }
@@ -623,7 +636,7 @@ namespace tmx {
         fs::path tileset_path = current_path / filename;
 
         tinyxml2::XMLDocument doc;
-        int err = doc.LoadFile(tileset_path.c_str());
+        int err = doc.LoadFile(tileset_path.string().c_str());
 
         if (doc.Error()) {
           std::clog << "Error! Unable to load a TSX file: " << tileset_path << '\n';
@@ -716,7 +729,7 @@ namespace tmx {
         }
 
         tinyxml2::XMLDocument doc;
-        int err = doc.LoadFile(map_path.c_str());
+        int err = doc.LoadFile(map_path.string().c_str());
 
         if (doc.Error()) {
           assert(err != tinyxml2::XML_NO_ERROR);

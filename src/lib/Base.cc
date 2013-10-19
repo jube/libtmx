@@ -32,7 +32,11 @@ namespace tmx {
   }
 
   bool Base::addProperty(const std::string& key, const std::string& value) {
+#if __cplusplus >= 201103L
     auto ret = m_prop.emplace(key, value);
+#else
+    auto ret = m_prop.insert(std::make_pair(key, value));
+#endif
     return ret.second;
   }
 

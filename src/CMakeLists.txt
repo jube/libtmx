@@ -12,7 +12,13 @@ pkg_check_modules(SFML2 sfml-graphics)
 find_package(ZLIB REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 
-add_definitions(-Wall -g -O2 -std=c++11)
+add_definitions(-Wall -g -O2)
+
+if (WIN32)
+  add_definitions(-std=c++0x)
+else (WIN32)
+  add_definitions(-std=c++11)
+endif (WIN32)
 
 add_subdirectory(lib)
 

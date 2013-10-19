@@ -25,4 +25,5 @@ target_link_libraries(tmx0 ${TINYXML2_LDFLAGS} ${ZLIB_LIBRARIES} ${Boost_LIBRARI
 install(
   TARGETS tmx0
   LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )

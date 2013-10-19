@@ -69,10 +69,10 @@ namespace tmx {
     }
 
   private:
-    const unsigned m_gid;
-    const bool m_hflip;
-    const bool m_vflip;
-    const bool m_dflip;
+    unsigned m_gid;
+    bool m_hflip;
+    bool m_vflip;
+    bool m_dflip;
   };
 
 }

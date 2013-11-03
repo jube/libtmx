@@ -20,6 +20,8 @@ else (WIN32)
   add_definitions(-std=c++11)
 endif (WIN32)
 
+include_directories(${LIBTMX_SOURCE_DIR}/include)
+
 add_subdirectory(lib)
 
 if(SFML2_FOUND)

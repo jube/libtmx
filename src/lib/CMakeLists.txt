@@ -1,5 +1,3 @@
-include_directories(${LIBTMX_SOURCE_DIR}/include)
-
 include_directories(${TINYXML2_INCLUDE_DIRS})
 include_directories(${ZLIB_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})

@@ -430,6 +430,7 @@ namespace tmx {
 
         if (elt.hasChild("polygon")) {
           auto obj = new Polygon(name, type, { x, y }, gid, visible);
+          parseBase(elt, obj);
 
           elt.parseOneElement("polygon", [obj,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
@@ -441,6 +442,7 @@ namespace tmx {
 
         if (elt.hasChild("polyline")) {
           auto obj = new Polyline(name, type, { x, y }, gid, visible);
+          parseBase(elt, obj);
 
           elt.parseOneElement("polyline", [obj,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
@@ -454,10 +456,14 @@ namespace tmx {
         unsigned height = elt.getUIntAttribute("height");
 
         if (elt.hasChild("ellipse")) {
-          return new Ellipse(name, type, { x, y }, gid, visible, width, height);
+          auto obj = new Ellipse(name, type, { x, y }, gid, visible, width, height);
+          parseBase(elt, obj);
+          return obj;
         }
 
-        return new Rectangle(name, type, { x, y }, gid, visible, width, height);
+        auto obj = new Rectangle(name, type, { x, y }, gid, visible, width, height);
+        parseBase(elt, obj);
+        return obj;
       }
 
       ObjectLayer *parseObjectGroup(const XMLElementWrapper elt) {

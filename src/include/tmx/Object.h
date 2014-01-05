@@ -72,6 +72,17 @@ namespace tmx {
     virtual ~Object();
 
     /**
+     * @brief Get the kind of the object.
+     *
+     * This may be useful to do some casting.
+     *
+     * @return the kind of the object
+     */
+    Kind getKind() const {
+      return m_kind;
+    }
+
+    /**
      * @brief Get the name of the object.
      *
      * @return the name of the object

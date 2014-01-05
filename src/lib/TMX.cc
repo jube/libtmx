@@ -104,6 +104,10 @@ namespace tmx {
         }
       }
 
+      bool hasAttribute(const char *name) const {
+        return m_elt->Attribute(name) != nullptr;
+      }
+
       unsigned getUIntAttribute(const char *name, Requirement req = Requirement::MANDATORY, unsigned val = 0) const {
         int err = m_elt->QueryUnsignedAttribute(name, &val);
         return handleErrorAndReturn(name, val, err, req);
@@ -425,11 +429,10 @@ namespace tmx {
         std::string type = elt.getStringAttribute("type", Requirement::OPTIONAL);
         unsigned x = elt.getUIntAttribute("x");
         unsigned y = elt.getUIntAttribute("y");
-        unsigned gid = elt.getUIntAttribute("gid", Requirement::OPTIONAL);
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
         if (elt.hasChild("polygon")) {
-          auto obj = new Polygon(name, type, { x, y }, gid, visible);
+          auto obj = new Polygon(name, type, { x, y }, visible);
           parseBase(elt, obj);
 
           elt.parseOneElement("polygon", [obj,this](const XMLElementWrapper elt) {
@@ -441,7 +444,7 @@ namespace tmx {
         }
 
         if (elt.hasChild("polyline")) {
-          auto obj = new Polyline(name, type, { x, y }, gid, visible);
+          auto obj = new Polyline(name, type, { x, y }, visible);
           parseBase(elt, obj);
 
           elt.parseOneElement("polyline", [obj,this](const XMLElementWrapper elt) {
@@ -452,16 +455,22 @@ namespace tmx {
           return obj;
         }
 
+        if (elt.hasAttribute("gid")) {
+          unsigned gid = elt.getUIntAttribute("gid");
+          auto obj = new TileObject(name, type, { x, y }, visible, gid);
+          return obj;
+        }
+
         unsigned width = elt.getUIntAttribute("width");
         unsigned height = elt.getUIntAttribute("height");
 
         if (elt.hasChild("ellipse")) {
-          auto obj = new Ellipse(name, type, { x, y }, gid, visible, width, height);
+          auto obj = new Ellipse(name, type, { x, y }, visible, width, height);
           parseBase(elt, obj);
           return obj;
         }
 
-        auto obj = new Rectangle(name, type, { x, y }, gid, visible, width, height);
+        auto obj = new Rectangle(name, type, { x, y }, visible, width, height);
         parseBase(elt, obj);
         return obj;
       }

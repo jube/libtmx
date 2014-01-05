@@ -3,40 +3,18 @@
 
 #include <boost/filesystem.hpp>
 
-#include <SFML/Graphics.hpp>
+#include <QPainter>
+#include <QCache>
 
 #include <tmx/TMX.h>
 #include <tmx/TileLayer.h>
 
 namespace fs = boost::filesystem;
 
-template<typename T>
-class ResourceManager {
-public:
-
-  T& getOrLoad(const fs::path& path) {
-    auto it = m_cache.find(path);
-
-    if (it != m_cache.end()) {
-      return *it->second;
-    }
-
-    std::unique_ptr<T> obj(new T);
-    bool loaded = obj->loadFromFile(path.string());
-    assert(loaded);
-
-    auto inserted = m_cache.emplace(path, std::move(obj));
-    assert(inserted.second);
-
-    return *inserted.first->second;
-  }
-
-private:
-  std::map<fs::path, std::unique_ptr<T>> m_cache;
-};
-
 class LayerRenderer : public tmx::LayerVisitor {
 public:
+  LayerRenderer()
+  : map(nullptr), painter(), tilewidth(0), tileheight(0), width(0), height(0) { }
 
   void renderMap(const fs::path& map_path) {
 
@@ -59,38 +37,51 @@ public:
     assert(height);
 
     // create surface
-    bool ret = result.create(width * tilewidth, height * tileheight);
-    assert(ret);
 
-    result.clear(sf::Color(0, 0, 0));
-    result.setSmooth(true);
-
+    QImage image(width * tilewidth, height * tileheight, QImage::Format_ARGB32);
+    painter.begin(&image);
     map->visitLayers(*this);
+    painter.end();
 
-    result.display();
-
-    sf::Image image = result.getTexture().copyToImage();
-    image.saveToFile("map.png");
+    std::printf("Saving image...\n");
+    image.save("map.png");
 
     delete map;
-
-
   }
 
 private:
   tmx::Map *map;
 
-  ResourceManager<sf::Texture> textures;
+  QPainter painter;
 
   unsigned tilewidth;
   unsigned tileheight;
   unsigned width;
   unsigned height;
 
-  sf::RenderTexture result;
+  QCache<QString, QImage> cache;
+
+  QImage *getTexture(const fs::path& path) {
+    QString str(path.string().c_str());
+    QImage *img = cache.object(str);
+
+    if (img != nullptr) {
+      return img;
+    }
+
+    img = new QImage(str);
+    assert(!img->isNull());
+
+    cache.insert(str, img);
+    return img;
+  }
 
 public:
   virtual void visitTileLayer(tmx::TileLayer& layer) {
+    if (!layer.isVisible()) {
+      return;
+    }
+
     std::printf("Rendering layer '%s'.\n", layer.getName().c_str());
 
     int k = 0;
@@ -98,6 +89,8 @@ public:
       int i = k % width;
       int j = k / width;
       assert(j < height);
+
+      QPoint origin(i * tilewidth, j * tileheight);
 
       unsigned gid = cell.getGID();
 
@@ -111,21 +104,32 @@ public:
 
       gid = gid - tileset->getFirstGID();
 
-      sf::Sprite sprite;
 
       if (tileset->hasImage()) {
 
         auto image = tileset->getImage();
         assert(image);
 
-        sf::Texture& tex = textures.getOrLoad(image->getSource());
-        sprite.setTexture(tex);
+        QImage *texture = getTexture(image->getSource());
+        QSize size = texture->size();
 
-        sf::Vector2u size = tex.getSize();
-        unsigned tu = gid % (size.x / tilewidth);
-        unsigned tv = gid / (size.x / tilewidth);
-        assert(tv < (size.y / tileheight));
-        sprite.setTextureRect(sf::IntRect(tu * tilewidth, tv * tileheight, tilewidth, tileheight));
+        unsigned margin = tileset->getMargin();
+        unsigned spacing = tileset->getSpacing();
+        QSize tilesize;
+        tilesize.setWidth((size.width() - 2 * margin + spacing) / (tilewidth + spacing));
+        tilesize.setHeight((size.height() - 2 * margin + spacing) / (tileheight + spacing));
+
+        unsigned tu = gid % tilesize.width();
+        unsigned tv = gid / tilesize.width();
+        assert(tv < tilesize.height());
+
+        unsigned du = margin + tu * spacing;
+        unsigned dv = margin + tv * spacing;
+        assert((tu + 1) * tilewidth + du < size.width());
+        assert((tv + 1) * tileheight + dv < size.height());
+
+        QRect rect(tu * tilewidth + du, tv * tileheight + dv, tilewidth, tileheight);
+        painter.drawImage(origin, *texture, rect);
 
       } else {
 
@@ -136,13 +140,9 @@ public:
         auto image = tile->getImage();
         assert(image);
 
-        sf::Texture& tex = textures.getOrLoad(image->getSource());
-        sprite.setTexture(tex);
-
+        QImage *texture = getTexture(image->getSource());
+        painter.drawImage(origin, *texture);
       }
-
-      sprite.setPosition(i * tilewidth, j * tileheight);
-      result.draw(sprite);
 
       k++;
     }

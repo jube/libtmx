@@ -24,6 +24,11 @@ public:
       return;
     }
 
+    if (map->getOrientation() != tmx::Orientation::ORTHOGONAL) {
+      std::printf("Can render only orthogonal maps. Exiting.\n");
+      return;
+    }
+
     tilewidth = map->getTileWidth();
     assert(tilewidth);
 
@@ -76,6 +81,52 @@ private:
     return img;
   }
 
+  void drawGID(const QPoint& origin, unsigned gid) {
+    auto tileset = map->getTileSetFromGID(gid);
+    assert(tileset);
+    gid = gid - tileset->getFirstGID();
+
+    if (tileset->hasImage()) {
+
+      auto image = tileset->getImage();
+      assert(image);
+
+      QImage *texture = getTexture(image->getSource());
+      QSize size = texture->size();
+
+      unsigned margin = tileset->getMargin();
+      unsigned spacing = tileset->getSpacing();
+      QSize tilesize;
+      tilesize.setWidth((size.width() - 2 * margin + spacing) / (tilewidth + spacing));
+      tilesize.setHeight((size.height() - 2 * margin + spacing) / (tileheight + spacing));
+
+      unsigned tu = gid % tilesize.width();
+      unsigned tv = gid / tilesize.width();
+      assert(tv < tilesize.height());
+
+      unsigned du = margin + tu * spacing;
+      unsigned dv = margin + tv * spacing;
+      assert((tu + 1) * tilewidth + du < size.width());
+      assert((tv + 1) * tileheight + dv < size.height());
+
+      QRect rect(tu * tilewidth + du, tv * tileheight + dv, tilewidth, tileheight);
+      painter.drawImage(origin, *texture, rect);
+
+    } else {
+
+      auto tile = tileset->getTile(gid);
+      assert(tile);
+      assert(tile->hasImage());
+
+      auto image = tile->getImage();
+      assert(image);
+
+      QImage *texture = getTexture(image->getSource());
+      painter.drawImage(origin, *texture);
+
+    }
+  }
+
 public:
   virtual void visitTileLayer(tmx::TileLayer& layer) {
     if (!layer.isVisible()) {
@@ -94,54 +145,8 @@ public:
 
       unsigned gid = cell.getGID();
 
-      if (gid == 0) {
-        k++;
-        continue;
-      }
-
-      auto tileset = map->getTileSetFromGID(gid);
-      assert(tileset);
-
-      gid = gid - tileset->getFirstGID();
-
-
-      if (tileset->hasImage()) {
-
-        auto image = tileset->getImage();
-        assert(image);
-
-        QImage *texture = getTexture(image->getSource());
-        QSize size = texture->size();
-
-        unsigned margin = tileset->getMargin();
-        unsigned spacing = tileset->getSpacing();
-        QSize tilesize;
-        tilesize.setWidth((size.width() - 2 * margin + spacing) / (tilewidth + spacing));
-        tilesize.setHeight((size.height() - 2 * margin + spacing) / (tileheight + spacing));
-
-        unsigned tu = gid % tilesize.width();
-        unsigned tv = gid / tilesize.width();
-        assert(tv < tilesize.height());
-
-        unsigned du = margin + tu * spacing;
-        unsigned dv = margin + tv * spacing;
-        assert((tu + 1) * tilewidth + du < size.width());
-        assert((tv + 1) * tileheight + dv < size.height());
-
-        QRect rect(tu * tilewidth + du, tv * tileheight + dv, tilewidth, tileheight);
-        painter.drawImage(origin, *texture, rect);
-
-      } else {
-
-        auto tile = tileset->getTile(gid);
-        assert(tile);
-        assert(tile->hasImage());
-
-        auto image = tile->getImage();
-        assert(image);
-
-        QImage *texture = getTexture(image->getSource());
-        painter.drawImage(origin, *texture);
+      if (gid != 0) {
+        drawGID(origin, gid);
       }
 
       k++;

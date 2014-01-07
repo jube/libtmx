@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Julien Bernard
+ * Copyright (c) 2013-2014, Julien Bernard
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -22,6 +22,7 @@
 #include <boost/range/iterator_range.hpp>
 
 #include "Base.h"
+#include "Geometry.h"
 #include "Image.h"
 #include "Terrain.h"
 #include "Tile.h"
@@ -229,6 +230,15 @@ namespace tmx {
      * @returns the tile
      */
     const Tile *getTile(unsigned id) const;
+
+    /**
+     * @brief Get the coordinates of a tile corresponding to an id.
+     *
+     * @param id the id of the tile
+     * @param size the size of the image corresponding to the tile
+     * @returns the coordinates in the form of a rectangle
+     */
+    Rect getCoords(unsigned id, Size size) const;
 
   private:
     const unsigned m_firstgid;

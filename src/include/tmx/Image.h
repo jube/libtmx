@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Julien Bernard
+ * Copyright (c) 2013-2014, Julien Bernard
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,6 +19,8 @@
 #include <string>
 
 #include <boost/filesystem.hpp>
+
+#include "Geometry.h"
 
 namespace tmx {
 
@@ -79,6 +81,24 @@ namespace tmx {
      */
     unsigned getHeight() const {
       return m_height;
+    }
+
+    /**
+     * @brief Tell whether the width and height are set.
+     *
+     * @returns true if the image has a declared size
+     */
+    bool hasSize() const {
+      return m_width > 0 && m_height > 0;
+    }
+
+    /**
+     * @brief Get the declared size of the image.
+     *
+     * @returns the size of the image.
+     */
+    Size getSize() const {
+      return { m_width, m_height };
     }
 
   private:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Julien Bernard
+ * Copyright (c) 2013-2014, Julien Bernard
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -20,24 +20,9 @@
 #include <vector>
 
 #include "Base.h"
+#include "Geometry.h"
 
 namespace tmx {
-
-  /**
-   * @brief A vector of unsigned integers.
-   */
-  struct Vector2u {
-    unsigned x; /**< the x coordinate */
-    unsigned y; /**< the y coordinate */
-  };
-
-  /**
-   * @brief A vector of signed integers.
-   */
-  struct Vector2i {
-    int x; /**< the x coordinate */
-    int y; /**< the y coordinate */
-  };
 
   /**
    * @brief An object is a geometrical object.
@@ -55,14 +40,15 @@ namespace tmx {
       ELLIPSE,    /**< Ellipse */
       POLYLINE,   /**< Polyline (open line) */
       POLYGON,    /**< Polygon (closed line) */
+      TILE,       /**< Tile (image) */
     };
 
     /**
      * @brief Object constructor.
      */
     Object(const Kind kind, const std::string& name, const std::string& type,
-        const Vector2u& origin, unsigned gid, bool visible)
-      : m_kind(kind), m_name(name), m_type(type), m_origin(origin), m_gid(gid), m_visible(visible)
+        const Vector2u& origin, bool visible)
+      : m_kind(kind), m_name(name), m_type(type), m_origin(origin), m_visible(visible)
     {
     }
 
@@ -70,6 +56,17 @@ namespace tmx {
      * @brief Object destructor.
      */
     virtual ~Object();
+
+    /**
+     * @brief Get the kind of the object.
+     *
+     * This may be useful to do some casting.
+     *
+     * @return the kind of the object
+     */
+    Kind getKind() const {
+      return m_kind;
+    }
 
     /**
      * @brief Get the name of the object.
@@ -120,15 +117,6 @@ namespace tmx {
     }
 
     /**
-     * @brief Get the global id of the refering tile (if needed)
-     *
-     * @return the global id
-     */
-    unsigned getGID() const {
-      return m_gid;
-    }
-
-    /**
      * @brief Tell whether this object is visible.
      *
      * @returns true if the object is visible
@@ -173,13 +161,49 @@ namespace tmx {
       return m_kind == POLYGON;
     }
 
+    /**
+     * @brief Tell whether this object is a tile.
+     *
+     * @returns true if the object is a tile
+     */
+    bool isTile() const {
+      return m_kind == TILE;
+    }
+
   private:
     const Kind m_kind;
     const std::string m_name;
     const std::string m_type;
     const Vector2u m_origin;
-    const unsigned m_gid;
     const bool m_visible;
+  };
+
+  /**
+   * @brief A tile object is an image put in the map.
+   */
+  class TileObject : public Object {
+  public:
+    /**
+     * @brief TileObject constructor.
+     */
+    TileObject(const std::string& name, const std::string& type,
+        const Vector2u& origin, bool visible, unsigned gid)
+      : Object(TILE, name, type, origin, visible), m_gid(gid)
+    {
+    }
+
+    /**
+     * @brief Get the global id of the refering tile (if needed)
+     *
+     * @return the global id
+     */
+    unsigned getGID() const {
+      return m_gid;
+    }
+
+  private:
+    const unsigned m_gid;
+
   };
 
   /**
@@ -194,8 +218,8 @@ namespace tmx {
      * @brief Boxed constructor.
      */
     Boxed(Kind kind, const std::string& name, const std::string& type,
-        const Vector2u& origin, unsigned gid, bool visible, unsigned width, unsigned height)
-      : Object(kind, name, type, origin, gid, visible), m_width(width), m_height(height)
+        const Vector2u& origin, bool visible, unsigned width, unsigned height)
+      : Object(kind, name, type, origin, visible), m_width(width), m_height(height)
     {
     }
 
@@ -233,8 +257,8 @@ namespace tmx {
      * @brief Rectangle constructor.
      */
     Rectangle(const std::string& name, const std::string& type,
-        const Vector2u& origin, unsigned gid, bool visible, unsigned width, unsigned height)
-      : Boxed(RECTANGLE, name, type, origin, gid, visible, width, height)
+        const Vector2u& origin, bool visible, unsigned width, unsigned height)
+      : Boxed(RECTANGLE, name, type, origin, visible, width, height)
     {
     }
   };
@@ -249,8 +273,8 @@ namespace tmx {
      * @brief Ellipse constructor.
      */
     Ellipse(const std::string& name, const std::string& type,
-        const Vector2u& origin, unsigned gid, bool visible, unsigned width, unsigned height)
-      : Boxed(ELLIPSE, name, type, origin, gid, visible, width, height)
+        const Vector2u& origin, bool visible, unsigned width, unsigned height)
+      : Boxed(ELLIPSE, name, type, origin, visible, width, height)
     {
     }
   };
@@ -265,8 +289,8 @@ namespace tmx {
     /**
      * @brief PolyBase constructor.
      */
-    PolyBase(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, unsigned gid, bool visible)
-      : Object(kind, name, type, origin, gid, visible)
+    PolyBase(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
+      : Object(kind, name, type, origin, visible)
     {
     }
 
@@ -314,8 +338,8 @@ namespace tmx {
     /**
      * @brief Polyline constructor.
      */
-    Polyline(const std::string& name, const std::string& type, const Vector2u& origin, unsigned gid, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, gid, visible)
+    Polyline(const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
+      : PolyBase(POLYLINE, name, type, origin, visible)
     {
     }
   };
@@ -328,8 +352,8 @@ namespace tmx {
     /**
      * @brief Polygon constructor.
      */
-    Polygon(const std::string& name, const std::string& type, const Vector2u& origin, unsigned gid, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, gid, visible)
+    Polygon(const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
+      : PolyBase(POLYLINE, name, type, origin, visible)
     {
     }
   };

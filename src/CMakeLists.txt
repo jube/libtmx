@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.9)
+# version 2.8.9 is necessary for Qt5
+# see http://qt-project.org/doc/qt-5.0/qtdoc/cmake-manual.html#using-qt-5-with-cmake-older-than-2-8-9
 
 project(LIBTMX CXX)
 
@@ -7,10 +9,12 @@ include(CPackConfig.cmake)
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(TINYXML2 REQUIRED tinyxml2)
-pkg_check_modules(SFML2 sfml-graphics)
 
 find_package(ZLIB REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
+
+find_package(Qt5Core)
+find_package(Qt5Gui)
 
 add_definitions(-Wall -g -O2)
 
@@ -24,7 +28,7 @@ include_directories(${LIBTMX_SOURCE_DIR}/include)
 
 add_subdirectory(lib)
 
-if(SFML2_FOUND)
+if(Qt5Core_FOUND)
   add_subdirectory(bin)
 endif()
 

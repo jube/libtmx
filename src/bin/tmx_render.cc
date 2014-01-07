@@ -3,46 +3,30 @@
 
 #include <boost/filesystem.hpp>
 
-#include <SFML/Graphics.hpp>
+#include <QPainter>
+#include <QCache>
 
 #include <tmx/TMX.h>
 #include <tmx/TileLayer.h>
+#include <tmx/ObjectLayer.h>
 
 namespace fs = boost::filesystem;
 
-template<typename T>
-class ResourceManager {
-public:
-
-  T& getOrLoad(const fs::path& path) {
-    auto it = m_cache.find(path);
-
-    if (it != m_cache.end()) {
-      return *it->second;
-    }
-
-    std::unique_ptr<T> obj(new T);
-    bool loaded = obj->loadFromFile(path.string());
-    assert(loaded);
-
-    auto inserted = m_cache.emplace(path, std::move(obj));
-    assert(inserted.second);
-
-    return *inserted.first->second;
-  }
-
-private:
-  std::map<fs::path, std::unique_ptr<T>> m_cache;
-};
-
 class LayerRenderer : public tmx::LayerVisitor {
 public:
+  LayerRenderer()
+  : map(nullptr), painter(), tilewidth(0), tileheight(0), width(0), height(0) { }
 
   void renderMap(const fs::path& map_path) {
 
     map = tmx::parseMapFile(map_path);
 
     if (!map) {
+      return;
+    }
+
+    if (map->getOrientation() != tmx::Orientation::ORTHOGONAL) {
+      std::printf("Can render only orthogonal maps. Exiting.\n");
       return;
     }
 
@@ -59,92 +43,145 @@ public:
     assert(height);
 
     // create surface
-    bool ret = result.create(width * tilewidth, height * tileheight);
-    assert(ret);
 
-    result.clear(sf::Color(0, 0, 0));
-    result.setSmooth(true);
-
+    QImage image(width * tilewidth, height * tileheight, QImage::Format_ARGB32);
+    painter.begin(&image);
     map->visitLayers(*this);
+    painter.end();
 
-    result.display();
-
-    sf::Image image = result.getTexture().copyToImage();
-    image.saveToFile("map.png");
+    std::printf("Saving image...\n");
+    image.save("map.png");
 
     delete map;
-
-
   }
 
 private:
   tmx::Map *map;
 
-  ResourceManager<sf::Texture> textures;
+  QPainter painter;
 
   unsigned tilewidth;
   unsigned tileheight;
   unsigned width;
   unsigned height;
 
-  sf::RenderTexture result;
+  QCache<QString, QImage> cache;
+
+  QImage *getTexture(const fs::path& path) {
+    QString str(path.string().c_str());
+    QImage *img = cache.object(str);
+
+    if (img != nullptr) {
+      return img;
+    }
+
+    img = new QImage(str);
+    assert(!img->isNull());
+
+    cache.insert(str, img);
+    return img;
+  }
+
+  enum class Alignment {
+    TOP_LEFT,
+    BOTTOM_LEFT,
+  };
+
+  void drawGID(const QPoint& origin, unsigned gid, Alignment align) {
+    auto tileset = map->getTileSetFromGID(gid);
+    assert(tileset);
+    gid = gid - tileset->getFirstGID();
+
+    if (tileset->hasImage()) {
+
+      auto image = tileset->getImage();
+      assert(image);
+
+      QImage *texture = getTexture(image->getSource());
+
+      tmx::Size size;
+
+      if (image->hasSize()) {
+        size = image->getSize();
+      } else {
+        QSize texture_size = texture->size();
+        assert(texture_size.width() >= 0);
+        assert(texture_size.height() >= 0);
+        size.width = texture_size.width();
+        size.height = texture_size.height();
+      }
+
+      tmx::Rect rect = tileset->getCoords(gid, size);
+      QPoint offset;
+
+      if (align == Alignment::BOTTOM_LEFT) {
+        offset.ry() -= rect.height;
+      }
+
+      painter.drawImage(origin + offset, *texture, QRect(rect.x, rect.y, rect.width, rect.height));
+
+    } else {
+
+      auto tile = tileset->getTile(gid);
+      assert(tile);
+      assert(tile->hasImage());
+
+      auto image = tile->getImage();
+      assert(image);
+
+      QImage *texture = getTexture(image->getSource());
+      painter.drawImage(origin, *texture);
+
+    }
+  }
 
 public:
   virtual void visitTileLayer(tmx::TileLayer& layer) {
-    std::printf("Rendering layer '%s'.\n", layer.getName().c_str());
+    if (!layer.isVisible()) {
+      return;
+    }
 
-    int k = 0;
+    std::printf("Rendering tile layer '%s'.\n", layer.getName().c_str());
+
+    unsigned k = 0;
     for (auto cell : layer) {
-      int i = k % width;
-      int j = k / width;
+      unsigned i = k % width;
+      unsigned j = k / width;
       assert(j < height);
+
+      QPoint origin(i * tilewidth, j * tileheight);
 
       unsigned gid = cell.getGID();
 
-      if (gid == 0) {
-        k++;
+      if (gid != 0) {
+        drawGID(origin, gid, Alignment::TOP_LEFT);
+      }
+
+      k++;
+    }
+
+  }
+
+  virtual void visitObjectLayer(tmx::ObjectLayer &layer) {
+    if (!layer.isVisible()) {
+      return;
+    }
+
+    std::printf("Rendering object layer '%s'.\n", layer.getName().c_str());
+
+    for (auto obj : layer) {
+      if (!obj->isTile()) {
         continue;
       }
 
-      auto tileset = map->getTileSetFromGID(gid);
-      assert(tileset);
+      auto tile = static_cast<tmx::TileObject *>(obj);
 
-      gid = gid - tileset->getFirstGID();
+      QPoint origin(tile->getX(), tile->getY());
 
-      sf::Sprite sprite;
+      unsigned gid = tile->getGID();
+      assert(gid != 0);
 
-      if (tileset->hasImage()) {
-
-        auto image = tileset->getImage();
-        assert(image);
-
-        sf::Texture& tex = textures.getOrLoad(image->getSource());
-        sprite.setTexture(tex);
-
-        sf::Vector2u size = tex.getSize();
-        unsigned tu = gid % (size.x / tilewidth);
-        unsigned tv = gid / (size.x / tilewidth);
-        assert(tv < (size.y / tileheight));
-        sprite.setTextureRect(sf::IntRect(tu * tilewidth, tv * tileheight, tilewidth, tileheight));
-
-      } else {
-
-        auto tile = tileset->getTile(gid);
-        assert(tile);
-        assert(tile->hasImage());
-
-        auto image = tile->getImage();
-        assert(image);
-
-        sf::Texture& tex = textures.getOrLoad(image->getSource());
-        sprite.setTexture(tex);
-
-      }
-
-      sprite.setPosition(i * tilewidth, j * tileheight);
-      result.draw(sprite);
-
-      k++;
+      drawGID(origin, gid, Alignment::BOTTOM_LEFT);
     }
 
   }

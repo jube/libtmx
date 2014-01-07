@@ -20,24 +20,9 @@
 #include <vector>
 
 #include "Base.h"
+#include "Geometry.h"
 
 namespace tmx {
-
-  /**
-   * @brief A vector of unsigned integers.
-   */
-  struct Vector2u {
-    unsigned x; /**< the x coordinate */
-    unsigned y; /**< the y coordinate */
-  };
-
-  /**
-   * @brief A vector of signed integers.
-   */
-  struct Vector2i {
-    int x; /**< the x coordinate */
-    int y; /**< the y coordinate */
-  };
 
   /**
    * @brief An object is a geometrical object.

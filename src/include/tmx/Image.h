@@ -20,15 +20,9 @@
 
 #include <boost/filesystem.hpp>
 
-namespace tmx {
+#include "Geometry.h"
 
-  /**
-   * @brief A size of an image.
-   */
-  struct Size {
-    unsigned width;   /**< the width of the image */
-    unsigned height;  /**< the height of the image */
-  };
+namespace tmx {
 
   /**
    * @brief An image is an image file on the system.

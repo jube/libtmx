@@ -22,22 +22,12 @@
 #include <boost/range/iterator_range.hpp>
 
 #include "Base.h"
+#include "Geometry.h"
 #include "Image.h"
 #include "Terrain.h"
 #include "Tile.h"
 
 namespace tmx {
-
-  /**
-   * @brief A rectangle representing the portion of the image corresponding
-   * to an id.
-   */
-  struct Rect {
-    unsigned x;
-    unsigned y;
-    unsigned width;
-    unsigned height;
-  };
 
   /**
    * @brief A tileset is a set of tiles in a single file (image or TSX file).

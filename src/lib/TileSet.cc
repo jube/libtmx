@@ -27,4 +27,20 @@ namespace tmx {
     return nullptr;
   }
 
+  Rect TileSet::getCoords(unsigned id, Size size) const {
+    unsigned width = (size.width - 2 * m_margin + m_spacing) / (m_tilewidth + m_spacing); // number of tiles
+    unsigned height = (size.height - 2 * m_margin + m_spacing) / (m_tileheight + m_spacing); // number of tiles
+
+    unsigned tu = id % width;
+    unsigned tv = id / width;
+    assert(tv < height);
+
+    unsigned du = m_margin + tu * m_spacing;
+    unsigned dv = m_margin + tv * m_spacing;
+    assert((tu + 1) * m_tilewidth + du <= size.width);
+    assert((tv + 1) * m_tileheight + dv <= size.height);
+
+    return { tu * m_tilewidth + du, tv * m_tileheight + dv, m_tilewidth, m_tileheight };
+  }
+
 }

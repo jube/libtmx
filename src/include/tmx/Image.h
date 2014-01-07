@@ -23,6 +23,14 @@
 namespace tmx {
 
   /**
+   * @brief A size of an image.
+   */
+  struct Size {
+    unsigned width;   /**< the width of the image */
+    unsigned height;  /**< the height of the image */
+  };
+
+  /**
    * @brief An image is an image file on the system.
    */
   class Image {
@@ -79,6 +87,24 @@ namespace tmx {
      */
     unsigned getHeight() const {
       return m_height;
+    }
+
+    /**
+     * @brief Tell whether the width and height are set.
+     *
+     * @returns true if the image has a declared size
+     */
+    bool hasSize() const {
+      return m_width > 0 && m_height > 0;
+    }
+
+    /**
+     * @brief Get the declared size of the image.
+     *
+     * @returns the size of the image.
+     */
+    Size getSize() const {
+      return { m_width, m_height };
     }
 
   private:

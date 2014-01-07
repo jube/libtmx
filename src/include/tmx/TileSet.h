@@ -29,6 +29,17 @@
 namespace tmx {
 
   /**
+   * @brief A rectangle representing the portion of the image corresponding
+   * to an id.
+   */
+  struct Rect {
+    unsigned x;
+    unsigned y;
+    unsigned width;
+    unsigned height;
+  };
+
+  /**
    * @brief A tileset is a set of tiles in a single file (image or TSX file).
    */
   class TileSet : public Base {
@@ -229,6 +240,15 @@ namespace tmx {
      * @returns the tile
      */
     const Tile *getTile(unsigned id) const;
+
+    /**
+     * @brief Get the coordinates of a tile corresponding to an id.
+     *
+     * @param id the id of the tile
+     * @param size the size of the image corresponding to the tile
+     * @returns the coordinates in the form of a rectangle
+     */
+    Rect getCoords(unsigned id, Size size) const;
 
   private:
     const unsigned m_firstgid;

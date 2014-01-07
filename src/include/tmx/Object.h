@@ -176,6 +176,15 @@ namespace tmx {
       return m_kind == POLYGON;
     }
 
+    /**
+     * @brief Tell whether this object is a tile.
+     *
+     * @returns true if the object is a tile
+     */
+    bool isTile() const {
+      return m_kind == TILE;
+    }
+
   private:
     const Kind m_kind;
     const std::string m_name;

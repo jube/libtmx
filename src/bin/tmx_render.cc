@@ -98,11 +98,20 @@ private:
       assert(image);
 
       QImage *texture = getTexture(image->getSource());
-      QSize size = texture->size();
-      assert(size.width() >= 0);
-      assert(size.height() >= 0);
 
-      tmx::Rect rect = tileset->getCoords(gid, { static_cast<unsigned>(size.width()), static_cast<unsigned>(size.height()) });
+      tmx::Size size;
+
+      if (image->hasSize()) {
+        size = image->getSize();
+      } else {
+        QSize texture_size = texture->size();
+        assert(texture_size.width() >= 0);
+        assert(texture_size.height() >= 0);
+        size.width = texture_size.width();
+        size.height = texture_size.height();
+      }
+
+      tmx::Rect rect = tileset->getCoords(gid, size);
       QPoint offset;
 
       if (align == Alignment::BOTTOM_LEFT) {

@@ -44,6 +44,10 @@ Finally, you can install the files (you may need root permissions):
 
 - Julien Bernard, julien dot bernard at univ dash fcomte dot fr
 
+## ChangeLog
+
+See [ChangeLog.md](https://github.com/jube/libtmx/blob/master/ChangeLog.md).
+
 ## Copyright
 
 This library is open source and is distributed under the [ISC licence](http://opensource.org/licenses/isc-license).

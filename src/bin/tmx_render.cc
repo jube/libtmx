@@ -8,6 +8,7 @@
 
 #include <tmx/TMX.h>
 #include <tmx/TileLayer.h>
+#include <tmx/ObjectLayer.h>
 
 namespace fs = boost::filesystem;
 
@@ -81,7 +82,12 @@ private:
     return img;
   }
 
-  void drawGID(const QPoint& origin, unsigned gid) {
+  enum class Alignment {
+    TOP_LEFT,
+    BOTTOM_LEFT,
+  };
+
+  void drawGID(const QPoint& origin, unsigned gid, Alignment align) {
     auto tileset = map->getTileSetFromGID(gid);
     assert(tileset);
     gid = gid - tileset->getFirstGID();
@@ -93,24 +99,17 @@ private:
 
       QImage *texture = getTexture(image->getSource());
       QSize size = texture->size();
+      assert(size.width() >= 0);
+      assert(size.height() >= 0);
 
-      unsigned margin = tileset->getMargin();
-      unsigned spacing = tileset->getSpacing();
-      QSize tilesize;
-      tilesize.setWidth((size.width() - 2 * margin + spacing) / (tilewidth + spacing));
-      tilesize.setHeight((size.height() - 2 * margin + spacing) / (tileheight + spacing));
+      tmx::Rect rect = tileset->getCoords(gid, { static_cast<unsigned>(size.width()), static_cast<unsigned>(size.height()) });
+      QPoint offset;
 
-      unsigned tu = gid % tilesize.width();
-      unsigned tv = gid / tilesize.width();
-      assert(tv < tilesize.height());
+      if (align == Alignment::BOTTOM_LEFT) {
+        offset.ry() -= rect.height;
+      }
 
-      unsigned du = margin + tu * spacing;
-      unsigned dv = margin + tv * spacing;
-      assert((tu + 1) * tilewidth + du < size.width());
-      assert((tv + 1) * tileheight + dv < size.height());
-
-      QRect rect(tu * tilewidth + du, tv * tileheight + dv, tilewidth, tileheight);
-      painter.drawImage(origin, *texture, rect);
+      painter.drawImage(origin + offset, *texture, QRect(rect.x, rect.y, rect.width, rect.height));
 
     } else {
 
@@ -133,12 +132,12 @@ public:
       return;
     }
 
-    std::printf("Rendering layer '%s'.\n", layer.getName().c_str());
+    std::printf("Rendering tile layer '%s'.\n", layer.getName().c_str());
 
-    int k = 0;
+    unsigned k = 0;
     for (auto cell : layer) {
-      int i = k % width;
-      int j = k / width;
+      unsigned i = k % width;
+      unsigned j = k / width;
       assert(j < height);
 
       QPoint origin(i * tilewidth, j * tileheight);
@@ -146,10 +145,34 @@ public:
       unsigned gid = cell.getGID();
 
       if (gid != 0) {
-        drawGID(origin, gid);
+        drawGID(origin, gid, Alignment::TOP_LEFT);
       }
 
       k++;
+    }
+
+  }
+
+  virtual void visitObjectLayer(tmx::ObjectLayer &layer) {
+    if (!layer.isVisible()) {
+      return;
+    }
+
+    std::printf("Rendering object layer '%s'.\n", layer.getName().c_str());
+
+    for (auto obj : layer) {
+      if (!obj->isTile()) {
+        continue;
+      }
+
+      auto tile = static_cast<tmx::TileObject *>(obj);
+
+      QPoint origin(tile->getX(), tile->getY());
+
+      unsigned gid = tile->getGID();
+      assert(gid != 0);
+
+      drawGID(origin, gid, Alignment::BOTTOM_LEFT);
     }
 
   }

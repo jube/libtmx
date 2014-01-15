@@ -67,19 +67,19 @@ private:
 
   QCache<QString, QImage> cache;
 
-  QImage *getTexture(const fs::path& path) {
+  const QImage getTexture(const fs::path& path) {
     QString str(path.string().c_str());
     QImage *img = cache.object(str);
 
     if (img != nullptr) {
-      return img;
+      return *img;
     }
 
     img = new QImage(str);
     assert(!img->isNull());
 
     cache.insert(str, img);
-    return img;
+    return *img;
   }
 
   enum class Alignment {
@@ -97,14 +97,14 @@ private:
       auto image = tileset->getImage();
       assert(image);
 
-      QImage *texture = getTexture(image->getSource());
+      const QImage texture = getTexture(image->getSource());
 
       tmx::Size size;
 
       if (image->hasSize()) {
         size = image->getSize();
       } else {
-        QSize texture_size = texture->size();
+        QSize texture_size = texture.size();
         assert(texture_size.width() >= 0);
         assert(texture_size.height() >= 0);
         size.width = texture_size.width();
@@ -118,7 +118,7 @@ private:
         offset.ry() -= rect.height;
       }
 
-      painter.drawImage(origin + offset, *texture, QRect(rect.x, rect.y, rect.width, rect.height));
+      painter.drawImage(origin + offset, texture, QRect(rect.x, rect.y, rect.width, rect.height));
 
     } else {
 
@@ -129,8 +129,8 @@ private:
       auto image = tile->getImage();
       assert(image);
 
-      QImage *texture = getTexture(image->getSource());
-      painter.drawImage(origin, *texture);
+      const QImage texture = getTexture(image->getSource());
+      painter.drawImage(origin, texture);
 
     }
   }

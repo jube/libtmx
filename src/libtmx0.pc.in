@@ -5,7 +5,7 @@ includedir=${prefix}/include
 
 Name: libtmx0
 Description: a C++11 library for reading TMX files
-URL: https://github.com/jube/litmx
+URL: https://github.com/jube/libtmx
 Version: @CPACK_PACKAGE_VERSION@
 Libs: -L${libdir} -ltmx0
 Cflags: -I${includedir}

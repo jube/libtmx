@@ -52,12 +52,12 @@ install(
 
 install(
   DIRECTORY "${CMAKE_BINARY_DIR}/doc/html"
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/libes"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/libtmx"
   OPTIONAL
 )
 
 install(
   FILES "${CMAKE_BINARY_DIR}/../COPYING"
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/libes"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/libtmx"
   OPTIONAL
 )

@@ -16,6 +16,10 @@
 * [Boost.Range](www.boost.org/libs/range/) (header only library)
 * [Boost String Algorithms](http://www.boost.org/libs/algorithm/string) (header only library)
 
+## Documentation
+
+Check the [online documentation of the current version of `libtmx`](http://jube.github.io/libtmx/index.html). This a doxygen documentation with some additional examples for rendering a map.
+
 ## Build and install
 
 You can download the sources directly from github:

@@ -136,7 +136,7 @@ private:
   }
 
 public:
-  virtual void visitTileLayer(tmx::TileLayer& layer) {
+  virtual void visitTileLayer(tmx::TileLayer& layer) override {
     if (!layer.isVisible()) {
       return;
     }
@@ -162,7 +162,7 @@ public:
 
   }
 
-  virtual void visitObjectLayer(tmx::ObjectLayer &layer) {
+  virtual void visitObjectLayer(tmx::ObjectLayer &layer) override {
     if (!layer.isVisible()) {
       return;
     }

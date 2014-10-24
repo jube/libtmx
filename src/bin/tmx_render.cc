@@ -14,12 +14,8 @@ namespace fs = boost::filesystem;
 
 class LayerRenderer : public tmx::LayerVisitor {
 public:
-  LayerRenderer()
-  : map(nullptr), painter(), tilewidth(0), tileheight(0), width(0), height(0) { }
-
   void renderMap(const fs::path& map_path) {
-
-    map = tmx::Map::parseFile(map_path);
+    auto map = tmx::Map::parseFile(map_path);
 
     if (!map) {
       return;
@@ -30,16 +26,16 @@ public:
       return;
     }
 
-    tilewidth = map->getTileWidth();
+    auto tilewidth = map->getTileWidth();
     assert(tilewidth);
 
-    tileheight = map->getTileHeight();
+    auto tileheight = map->getTileHeight();
     assert(tileheight);
 
-    width = map->getWidth();
+    auto width = map->getWidth();
     assert(width);
 
-    height = map->getHeight();
+    auto height = map->getHeight();
     assert(height);
 
     // create surface
@@ -54,15 +50,7 @@ public:
   }
 
 private:
-  std::unique_ptr<tmx::Map> map;
-
   QPainter painter;
-
-  unsigned tilewidth;
-  unsigned tileheight;
-  unsigned width;
-  unsigned height;
-
   QCache<QString, QImage> cache;
 
   const QImage getTexture(const fs::path& path) {
@@ -85,8 +73,8 @@ private:
     BOTTOM_LEFT,
   };
 
-  void drawGID(const QPoint& origin, unsigned gid, Alignment align) {
-    auto tileset = map->getTileSetFromGID(gid);
+  void drawGID(const tmx::Map& map, const QPoint& origin, unsigned gid, Alignment align) {
+    auto tileset = map.getTileSetFromGID(gid);
     assert(tileset);
     gid = gid - tileset->getFirstGID();
 
@@ -134,7 +122,7 @@ private:
   }
 
 public:
-  virtual void visitTileLayer(tmx::TileLayer& layer) override {
+  virtual void visitTileLayer(const tmx::Map& map, const tmx::TileLayer& layer) override {
     if (!layer.isVisible()) {
       return;
     }
@@ -143,16 +131,16 @@ public:
 
     unsigned k = 0;
     for (auto cell : layer) {
-      unsigned i = k % width;
-      unsigned j = k / width;
-      assert(j < height);
+      unsigned i = k % map.getWidth();
+      unsigned j = k / map.getWidth();
+      assert(j < map.getHeight());
 
-      QPoint origin(i * tilewidth, j * tileheight);
+      QPoint origin(i * map.getTileWidth(), j * map.getTileHeight());
 
       unsigned gid = cell.getGID();
 
       if (gid != 0) {
-        drawGID(origin, gid, Alignment::TOP_LEFT);
+        drawGID(map, origin, gid, Alignment::TOP_LEFT);
       }
 
       k++;
@@ -160,7 +148,7 @@ public:
 
   }
 
-  virtual void visitObjectLayer(tmx::ObjectLayer &layer) override {
+  virtual void visitObjectLayer(const tmx::Map& map, const tmx::ObjectLayer &layer) override {
     if (!layer.isVisible()) {
       return;
     }
@@ -179,7 +167,7 @@ public:
       unsigned gid = tile->getGID();
       assert(gid != 0);
 
-      drawGID(origin, gid, Alignment::BOTTOM_LEFT);
+      drawGID(map, origin, gid, Alignment::BOTTOM_LEFT);
     }
 
   }

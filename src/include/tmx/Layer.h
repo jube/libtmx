@@ -20,6 +20,7 @@
 
 namespace tmx {
   class LayerVisitor;
+  class Map;
 
   /**
    * @brief A layer is a layer in the whole map.
@@ -46,7 +47,7 @@ namespace tmx {
      *
      * @param visitor the visitor
      */
-    virtual void accept(LayerVisitor& visitor) = 0;
+    virtual void accept(const Map& map, LayerVisitor& visitor) const = 0;
 
     /**
      * @brief Get the name of the layer.

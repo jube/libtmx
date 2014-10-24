@@ -34,7 +34,7 @@ namespace tmx {
     {
     }
 
-    virtual void accept(LayerVisitor& visitor);
+    virtual void accept(const Map& map, LayerVisitor& visitor) const override;
 
     /**
      * @brief Assign the image for the layer.

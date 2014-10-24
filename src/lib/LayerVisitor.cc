@@ -20,13 +20,16 @@ namespace tmx {
   LayerVisitor::~LayerVisitor() {
   }
 
-  void LayerVisitor::visitTileLayer(TileLayer& layer) {
+  void LayerVisitor::visitTileLayer(const Map& map, const TileLayer& layer) {
+    // do nothing by default
   }
 
-  void LayerVisitor::visitObjectLayer(ObjectLayer& layer) {
+  void LayerVisitor::visitObjectLayer(const Map& map, const ObjectLayer& layer) {
+    // do nothing by default
   }
 
-  void LayerVisitor::visitImageLayer(ImageLayer& layer) {
+  void LayerVisitor::visitImageLayer(const Map& map, const ImageLayer& layer) {
+    // do nothing by default
   }
 
 }

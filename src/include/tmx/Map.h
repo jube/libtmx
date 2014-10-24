@@ -198,9 +198,9 @@ namespace tmx {
      *
      * @param visitor the visitor
      */
-    void visitLayers(LayerVisitor& visitor) {
+    void visitLayers(LayerVisitor& visitor) const {
       for (auto& layer : m_layers) {
-        layer->accept(visitor);
+        layer->accept(*this, visitor);
       }
     }
 

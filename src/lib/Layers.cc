@@ -24,16 +24,16 @@ namespace tmx {
   Layer::~Layer() {
   }
 
-  void ImageLayer::accept(LayerVisitor& visitor) {
-    visitor.visitImageLayer(*this);
+  void ImageLayer::accept(const Map& map, LayerVisitor& visitor) const {
+    visitor.visitImageLayer(map, *this);
   }
 
-  void ObjectLayer::accept(LayerVisitor& visitor) {
-    visitor.visitObjectLayer(*this);
+  void ObjectLayer::accept(const Map& map, LayerVisitor& visitor) const {
+    visitor.visitObjectLayer(map, *this);
   }
 
-  void TileLayer::accept(LayerVisitor& visitor) {
-    visitor.visitTileLayer(*this);
+  void TileLayer::accept(const Map& map, LayerVisitor& visitor) const {
+    visitor.visitTileLayer(map, *this);
   }
 
 }

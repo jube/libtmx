@@ -38,7 +38,7 @@ namespace tmx {
     {
     }
 
-    virtual void accept(LayerVisitor& visitor);
+    virtual void accept(const Map& map, LayerVisitor& visitor) const override;
 
     /**
      * @brief Get the color used to display the objects.
@@ -61,14 +61,14 @@ namespace tmx {
     /**
      * @brief An object iterator.
      */
-    typedef std::vector<std::unique_ptr<Object>>::const_iterator iterator;
+    typedef std::vector<std::unique_ptr<Object>>::const_iterator const_iterator;
 
     /**
      * @brief Get the begin iterator on the objects.
      *
      * @return the begin iterator
      */
-    iterator begin() const {
+    const_iterator begin() const {
       return m_objects.cbegin();
     }
 
@@ -77,7 +77,7 @@ namespace tmx {
      *
      * @return the end iterator
      */
-    iterator end() const {
+    const_iterator end() const {
       return m_objects.cend();
     }
 

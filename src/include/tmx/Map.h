@@ -45,6 +45,16 @@ namespace tmx {
   };
 
   /**
+   * @brief the render order of the tiles.
+   */
+  enum class RenderOrder {
+    RIGHT_DOWN, /**< Right down order */
+    RIGHT_UP,   /**< Right up order */
+    LEFT_DOWN,  /**< Left down order */
+    LEFT_UP,    /**< Left up order */
+  };
+
+  /**
    * @brief A map is a set of tilesets and a set of different layers.
    *
    * Tilesets describe what to draw while layers describe how to draw things.
@@ -55,9 +65,9 @@ namespace tmx {
      * @brief Map constructor.
      */
     Map(const std::string version, Orientation orientation, unsigned width, unsigned height,
-        unsigned tilewidth, unsigned tileheight, const std::string& bgcolor)
+        unsigned tilewidth, unsigned tileheight, const std::string& bgcolor, RenderOrder render_order)
       : m_version(version), m_orientation(orientation), m_width(width), m_height(height),
-        m_tilewidth(tilewidth), m_tileheight(tileheight), m_bgcolor(bgcolor)
+        m_tilewidth(tilewidth), m_tileheight(tileheight), m_bgcolor(bgcolor), m_render_order(render_order)
     {
     }
 
@@ -122,6 +132,15 @@ namespace tmx {
      */
     const std::string& getBackgroundColor() const {
       return m_bgcolor;
+    }
+
+    /**
+     * @brief Get the render order.
+     *
+     * @returns the render order
+     */
+    RenderOrder getRenderOrder() const {
+      return m_render_order;
     }
 
     /**
@@ -213,6 +232,8 @@ namespace tmx {
     const unsigned m_tileheight;
 
     const std::string m_bgcolor;
+
+    const RenderOrder m_render_order;
 
     std::vector<std::unique_ptr<TileSet>> m_tilesets;
     std::vector<std::unique_ptr<Layer>> m_layers;

@@ -759,7 +759,23 @@ namespace tmx {
         unsigned tileheight = elt.getUIntAttribute("tileheight");
         std::string bgcolor = elt.getStringAttribute("backgroundcolor", Requirement::OPTIONAL, "#FFFFFF");
 
-        auto map_ptr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor);
+        RenderOrder render_order = RenderOrder::RIGHT_DOWN; // default value
+
+        if (elt.hasAttribute("renderorder")) {
+          if (elt.isEnumAttribute("renderorder", "right-down")) {
+            render_order = RenderOrder::RIGHT_DOWN;
+          } else if (elt.isEnumAttribute("renderorder", "right-up")) {
+            render_order = RenderOrder::RIGHT_UP;
+          } else if (elt.isEnumAttribute("renderorder", "left-down")) {
+            render_order = RenderOrder::LEFT_DOWN;
+          } else if (elt.isEnumAttribute("renderorder", "left-up")) {
+            render_order = RenderOrder::LEFT_UP;
+          } else {
+            std::clog << "Error! Wrong render order string: '" << elt.getStringAttribute("renderorder") << "'\n";
+          }
+        }
+
+        auto map_ptr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor, render_order);
         auto map = map_ptr.get();
 
         elt.parseManyElements("tileset", [map,this](const XMLElementWrapper elt) {

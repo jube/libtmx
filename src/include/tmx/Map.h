@@ -62,19 +62,6 @@ namespace tmx {
     }
 
     /**
-     * @brief Map destructor.
-     */
-    ~Map() {
-      for (auto item : m_tilesets) {
-        delete item;
-      }
-
-      for (auto item : m_layers) {
-        delete item;
-      }
-    }
-
-    /**
      * @brief Get the version of the TMX format.
      *
      * @returns the version of the TMX format (generally "1.0")
@@ -142,17 +129,18 @@ namespace tmx {
      *
      * @param tileset the tileset
      */
-    void addTileSet(TileSet *tileset) {
-      if (tileset == nullptr) {
+    void addTileSet(std::unique_ptr<TileSet> tileset) {
+      if (!tileset) {
         return;
       }
-      m_tilesets.emplace_back(tileset);
+
+      m_tilesets.emplace_back(std::move(tileset));
     }
 
     /**
      * @brief A tileset range.
      */
-    typedef boost::iterator_range<std::vector<TileSet*>::const_iterator> const_tileset_range;
+    typedef boost::iterator_range<std::vector<std::unique_ptr<TileSet>>::const_iterator> const_tileset_range;
 
     /**
      * @brief Get the tilesets.
@@ -168,14 +156,14 @@ namespace tmx {
      *
      * @param layer the layer
      */
-    void addLayer(Layer *layer) {
-      m_layers.emplace_back(layer);
+    void addLayer(std::unique_ptr<Layer> layer) {
+      m_layers.emplace_back(std::move(layer));
     }
 
     /**
      * @brief A layer range.
      */
-    typedef boost::iterator_range<std::vector<Layer*>::const_iterator> const_layer_range;
+    typedef boost::iterator_range<std::vector<std::unique_ptr<Layer>>::const_iterator> const_layer_range;
 
     /**
      * @brief Get the layers.
@@ -192,7 +180,7 @@ namespace tmx {
      * @param visitor the visitor
      */
     void visitLayers(LayerVisitor& visitor) {
-      for (auto layer : m_layers) {
+      for (auto& layer : m_layers) {
         layer->accept(visitor);
       }
     }
@@ -203,7 +191,7 @@ namespace tmx {
      * @param gid a global id
      * @returns the corresponding tileset
      */
-    TileSet *getTileSetFromGID(unsigned gid);
+    TileSet *getTileSetFromGID(unsigned gid) const;
 
     /**
      * @brief Parse a TMX file.
@@ -226,8 +214,8 @@ namespace tmx {
 
     const std::string m_bgcolor;
 
-    std::vector<TileSet*>     m_tilesets;
-    std::vector<Layer*>       m_layers;
+    std::vector<std::unique_ptr<TileSet>> m_tilesets;
+    std::vector<std::unique_ptr<Layer>> m_layers;
   };
 
 }

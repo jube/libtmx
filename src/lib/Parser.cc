@@ -383,21 +383,23 @@ namespace tmx {
         return new Image(format, current_path / source, trans, width, height);
       }
 
-      ImageLayer *parseImageLayer(const XMLElementWrapper elt) {
+      std::unique_ptr<ImageLayer> parseImageLayer(const XMLElementWrapper elt) {
         assert(elt.is("imagelayer"));
 
         std::string name = elt.getStringAttribute("name");
         double opacity = elt.getDoubleAttribute("opacity", Requirement::OPTIONAL, 1.0);
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
-        auto image_layer = new ImageLayer(name, opacity, visible);
+        auto image_layer_ptr = makeUnique<ImageLayer>(name, opacity, visible);
+        auto image_layer = image_layer_ptr.get();
+
         parseComponent(elt, image_layer);
 
         elt.parseOneElement("image", [image_layer,this](const XMLElementWrapper elt) {
           image_layer->setImage(parseImage(elt));
         });
 
-        return image_layer;
+        return image_layer_ptr;
       }
 
       std::vector<Vector2i> parsePoints(const std::string& points) {
@@ -479,7 +481,7 @@ namespace tmx {
         return obj;
       }
 
-      ObjectLayer *parseObjectGroup(const XMLElementWrapper elt) {
+      std::unique_ptr<ObjectLayer> parseObjectGroup(const XMLElementWrapper elt) {
         assert(elt.is("objectgroup"));
 
         std::string name = elt.getStringAttribute("name");
@@ -488,14 +490,16 @@ namespace tmx {
 
         std::string color = elt.getStringAttribute("color", Requirement::OPTIONAL);
 
-        auto object_group = new ObjectLayer(name, opacity, visible, color);
+        auto object_group_ptr = makeUnique<ObjectLayer>(name, opacity, visible, color);
+        auto object_group = object_group_ptr.get();
+
         parseComponent(elt, object_group);
 
         elt.parseManyElements("object", [object_group,this](const XMLElementWrapper elt) {
           object_group->addObject(parseObject(elt));
         });
 
-        return object_group;
+        return object_group_ptr;
       }
 
       static const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
@@ -503,14 +507,16 @@ namespace tmx {
       static const unsigned FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
 
 
-      TileLayer *parseLayer(const XMLElementWrapper elt) {
+      std::unique_ptr<TileLayer> parseLayer(const XMLElementWrapper elt) {
         assert(elt.is("layer"));
 
         std::string name = elt.getStringAttribute("name");
         double opacity = elt.getDoubleAttribute("opacity", Requirement::OPTIONAL, 1.0);
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
-        auto layer = new TileLayer(name, opacity, visible);
+        auto layer_ptr = makeUnique<TileLayer>(name, opacity, visible);
+        auto layer = layer_ptr.get();
+
         parseComponent(elt, layer);
 
         elt.parseOneElement("data", [layer,this](const XMLElementWrapper elt) {
@@ -565,7 +571,7 @@ namespace tmx {
           }
         });
 
-        return layer;
+        return layer_ptr;
       }
 
       Tile *parseTile(const XMLElementWrapper elt) {
@@ -616,7 +622,7 @@ namespace tmx {
         return terrain;
       }
 
-      TileSet *parseTileSetFromElement(unsigned firstgid, const XMLElementWrapper elt) {
+      std::unique_ptr<TileSet> parseTileSetFromElement(unsigned firstgid, const XMLElementWrapper elt) {
         assert(elt.is("tileset"));
 
         std::string name = elt.getStringAttribute("name", Requirement::OPTIONAL);
@@ -625,7 +631,9 @@ namespace tmx {
         unsigned spacing = elt.getUIntAttribute("spacing", Requirement::OPTIONAL);
         unsigned margin = elt.getUIntAttribute("margin", Requirement::OPTIONAL);
 
-        auto tile_set = new TileSet(firstgid, name, tilewidth, tileheight, spacing, margin);
+        auto tile_set_ptr = makeUnique<TileSet>(firstgid, name, tilewidth, tileheight, spacing, margin);
+        auto tile_set = tile_set_ptr.get();
+
         parseComponent(elt, tile_set);
 
         elt.parseOneElement("tileoffset", [tile_set](const XMLElementWrapper elt) {
@@ -648,10 +656,10 @@ namespace tmx {
           tile_set->addTile(parseTile(elt));
         });
 
-        return tile_set;
+        return tile_set_ptr;
       }
 
-      TileSet *parseTileSetFromFile(unsigned firstgid, const std::string& filename) {
+      std::unique_ptr<TileSet> parseTileSetFromFile(unsigned firstgid, const std::string& filename) {
         fs::path tileset_path = current_path / filename;
 
         tinyxml2::XMLDocument doc;
@@ -677,14 +685,14 @@ namespace tmx {
           std::clog << "Warning! Attribute 'source' present in a TSX file: " << tileset_path << '\n';
         }
 
-        TileSet *ret = parseTileSetFromElement(firstgid, elt);
+        auto ret = parseTileSetFromElement(firstgid, elt);
 
         current_path = map_path.parent_path();
 
         return ret;
       }
 
-      TileSet *parseTileSet(const XMLElementWrapper elt) {
+      std::unique_ptr<TileSet> parseTileSet(const XMLElementWrapper elt) {
         assert(elt.is("tileset"));
 
         unsigned firstgid = elt.getUIntAttribute("firstgid");

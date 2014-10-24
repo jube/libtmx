@@ -451,12 +451,13 @@ namespace tmx {
         std::string type = elt.getStringAttribute("type", Requirement::OPTIONAL);
         unsigned x = elt.getUIntAttribute("x");
         unsigned y = elt.getUIntAttribute("y");
+        double rotation = elt.getUIntAttribute("rotation", Requirement::OPTIONAL);
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
         Vector2u origin{x, y};
 
         if (elt.hasChild("polygon")) {
-          auto obj_ptr = makeUnique<Polygon>(name, type, origin, visible);
+          auto obj_ptr = makeUnique<Polygon>(name, type, origin, rotation, visible);
           auto obj = obj_ptr.get();
 
           parseComponent(elt, obj);
@@ -470,7 +471,7 @@ namespace tmx {
         }
 
         if (elt.hasChild("polyline")) {
-          auto obj_ptr = makeUnique<Polyline>(name, type, origin, visible);
+          auto obj_ptr = makeUnique<Polyline>(name, type, origin, rotation, visible);
           auto obj = obj_ptr.get();
 
           parseComponent(elt, obj);
@@ -489,7 +490,7 @@ namespace tmx {
           bool hflip, vflip, dflip;
           std::tie(hflip, vflip, dflip, gid) = decodeGID(gid);
 
-          auto obj_ptr = makeUnique<TileObject>(name, type, origin, visible, gid, hflip, vflip, dflip);
+          auto obj_ptr = makeUnique<TileObject>(name, type, origin, rotation, visible, gid, hflip, vflip, dflip);
           auto obj = obj_ptr.get();
 
           parseComponent(elt, obj);
@@ -501,7 +502,7 @@ namespace tmx {
         unsigned height = elt.getUIntAttribute("height");
 
         if (elt.hasChild("ellipse")) {
-          auto obj_ptr = makeUnique<Ellipse>(name, type, origin, visible, width, height);
+          auto obj_ptr = makeUnique<Ellipse>(name, type, origin, rotation, visible, width, height);
           auto obj = obj_ptr.get();
 
           parseComponent(elt, obj);
@@ -509,7 +510,7 @@ namespace tmx {
           return std::move(obj_ptr);
         }
 
-        auto obj_ptr = makeUnique<Rectangle>(name, type, origin, visible, width, height);
+        auto obj_ptr = makeUnique<Rectangle>(name, type, origin, rotation, visible, width, height);
         auto obj = obj_ptr.get();
 
         parseComponent(elt, obj);

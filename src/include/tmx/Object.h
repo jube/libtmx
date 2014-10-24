@@ -47,8 +47,8 @@ namespace tmx {
      * @brief Object constructor.
      */
     Object(const Kind kind, const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible)
-      : m_kind(kind), m_name(name), m_type(type), m_origin(origin), m_visible(visible)
+        const Vector2u& origin, double rotation, bool visible)
+      : m_kind(kind), m_name(name), m_type(type), m_origin(origin), m_rotation(rotation), m_visible(visible)
     {
     }
 
@@ -117,6 +117,15 @@ namespace tmx {
     }
 
     /**
+     * @brief Get the rotation of the object.
+     *
+     * @return the angle of rotation in degrees clockwise
+     */
+    double getRotation() const {
+      return m_rotation;
+    }
+
+    /**
      * @brief Tell whether this object is visible.
      *
      * @returns true if the object is visible
@@ -175,6 +184,7 @@ namespace tmx {
     const std::string m_name;
     const std::string m_type;
     const Vector2u m_origin;
+    const double m_rotation;
     const bool m_visible;
   };
 
@@ -187,8 +197,8 @@ namespace tmx {
      * @brief TileObject constructor.
      */
     TileObject(const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned gid, bool hflip, bool vflip, bool dflip)
-      : Object(TILE, name, type, origin, visible)
+        const Vector2u& origin, double rotation, bool visible, unsigned gid, bool hflip, bool vflip, bool dflip)
+      : Object(TILE, name, type, origin, rotation, visible)
       , m_gid(gid), m_hflip(hflip), m_vflip(vflip), m_dflip(dflip)
     {
     }
@@ -248,8 +258,8 @@ namespace tmx {
      * @brief Boxed constructor.
      */
     Boxed(Kind kind, const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned width, unsigned height)
-      : Object(kind, name, type, origin, visible), m_width(width), m_height(height)
+        const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
+      : Object(kind, name, type, origin, rotation, visible), m_width(width), m_height(height)
     {
     }
 
@@ -287,8 +297,8 @@ namespace tmx {
      * @brief Rectangle constructor.
      */
     Rectangle(const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned width, unsigned height)
-      : Boxed(RECTANGLE, name, type, origin, visible, width, height)
+        const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
+      : Boxed(RECTANGLE, name, type, origin, rotation, visible, width, height)
     {
     }
   };
@@ -303,8 +313,8 @@ namespace tmx {
      * @brief Ellipse constructor.
      */
     Ellipse(const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned width, unsigned height)
-      : Boxed(ELLIPSE, name, type, origin, visible, width, height)
+        const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
+      : Boxed(ELLIPSE, name, type, origin, rotation, visible, width, height)
     {
     }
   };
@@ -319,8 +329,8 @@ namespace tmx {
     /**
      * @brief PolyBase constructor.
      */
-    PolyBase(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
-      : Object(kind, name, type, origin, visible)
+    PolyBase(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : Object(kind, name, type, origin, rotation, visible)
     {
     }
 
@@ -368,8 +378,8 @@ namespace tmx {
     /**
      * @brief Polyline constructor.
      */
-    Polyline(const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, visible)
+    Polyline(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : PolyBase(POLYLINE, name, type, origin, rotation, visible)
     {
     }
   };
@@ -382,8 +392,8 @@ namespace tmx {
     /**
      * @brief Polygon constructor.
      */
-    Polygon(const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, visible)
+    Polygon(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : PolyBase(POLYLINE, name, type, origin, rotation, visible)
     {
     }
   };

@@ -6,7 +6,7 @@
 #include <QPainter>
 #include <QCache>
 
-#include <tmx/TMX.h>
+#include <tmx/Map.h>
 #include <tmx/TileLayer.h>
 #include <tmx/ObjectLayer.h>
 
@@ -19,7 +19,7 @@ public:
 
   void renderMap(const fs::path& map_path) {
 
-    map = tmx::parseMapFile(map_path);
+    map = tmx::Map::parseFile(map_path);
 
     if (!map) {
       return;
@@ -51,12 +51,10 @@ public:
 
     std::printf("Saving image...\n");
     image.save("map.png");
-
-    delete map;
   }
 
 private:
-  tmx::Map *map;
+  std::unique_ptr<tmx::Map> map;
 
   QPainter painter;
 

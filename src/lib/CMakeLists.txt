@@ -10,8 +10,8 @@ set(LIBTMX_SRC
   LayerVisitor.cc
   Map.cc
   Object.cc
+  Parser.cc
   TileSet.cc
-  TMX.cc
 )
 
 add_library(tmx0 SHARED

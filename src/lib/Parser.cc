@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#include <tmx/TMX.h>
+#include <tmx/Map.h>
 
 #include <cassert>
 #include <cstring>
@@ -32,7 +32,6 @@
 #include <tmx/Image.h>
 #include <tmx/ImageLayer.h>
 #include <tmx/Layer.h>
-#include <tmx/Map.h>
 #include <tmx/Object.h>
 #include <tmx/ObjectLayer.h>
 #include <tmx/Terrain.h>
@@ -45,6 +44,11 @@
 namespace fs = boost::filesystem;
 
 namespace tmx {
+
+  template<typename T, typename... Args>
+  static inline std::unique_ptr<T> makeUnique(Args&&... args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+  }
 
   namespace {
 
@@ -693,7 +697,7 @@ namespace tmx {
         return parseTileSetFromElement(firstgid, elt);
       }
 
-      Map *parseMap(const XMLElementWrapper elt) {
+      std::unique_ptr<Map> parseMap(const XMLElementWrapper elt) {
         assert(elt.is("map"));
 
         std::string version =  elt.getStringAttribute("version", Requirement::OPTIONAL, "1.0");
@@ -716,7 +720,8 @@ namespace tmx {
         unsigned tileheight = elt.getUIntAttribute("tileheight");
         std::string bgcolor = elt.getStringAttribute("backgroundcolor", Requirement::OPTIONAL, "#FFFFFF");
 
-        auto map = new Map(version, orientation, width, height, tilewidth, tileheight, bgcolor);
+        auto map_ptr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor);
+        auto map = map_ptr.get();
 
         elt.parseManyElements("tileset", [map,this](const XMLElementWrapper elt) {
           map->addTileSet(parseTileSet(elt));
@@ -732,12 +737,12 @@ namespace tmx {
           }
         });
 
-        return map;
+        return map_ptr;
       }
 
       Parser(const boost::filesystem::path& filename) : map_path(filename) { }
 
-      Map *parse() {
+      std::unique_ptr<Map> parse() {
         if (!fs::is_regular_file(map_path)) {
           std::clog << "Error! Unknown TMX file: " << map_path << '\n';
           return nullptr;
@@ -764,7 +769,7 @@ namespace tmx {
 
   }
 
-  Map *parseMapFile(const boost::filesystem::path& filename) {
+  std::unique_ptr<Map> Map::parseFile(const boost::filesystem::path& filename) {
     Parser parser(filename);
     return parser.parse();
   }

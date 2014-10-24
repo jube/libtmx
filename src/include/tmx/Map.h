@@ -18,15 +18,20 @@
 
 #include <cstddef>
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 
 #include "Layer.h"
 #include "LayerVisitor.h"
 #include "TileSet.h"
 
+/**
+ * @brief The namespace for all `libtmx` classes.
+ */
 namespace tmx {
 
   /**
@@ -199,6 +204,14 @@ namespace tmx {
      * @returns the corresponding tileset
      */
     TileSet *getTileSetFromGID(unsigned gid);
+
+    /**
+     * @brief Parse a TMX file.
+     *
+     * @param filename the name of the TMX file
+     * @returns a map
+     */
+    static std::unique_ptr<Map> parseFile(const boost::filesystem::path& filename);
 
   private:
     const std::string m_version;

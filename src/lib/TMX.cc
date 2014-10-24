@@ -185,8 +185,8 @@ namespace tmx {
     class Parser {
     public:
 
-      // http://en.wikibooks.org/wiki/Algorithm_implementation/Miscellaneous/Component64
-      std::vector<uint8_t> parseDataComponent64(const std::string& input) {
+      // http://en.wikibooks.org/wiki/Algorithm_implementation/Miscellaneous/Base64
+      std::vector<uint8_t> parseDataBase64(const std::string& input) {
         std::string clean_input = boost::algorithm::erase_all_copy(input, "\n");
         clean_input = boost::algorithm::erase_all_copy(clean_input, " ");
 
@@ -337,12 +337,12 @@ namespace tmx {
             break;
 
           case Format::BASE64:
-            data = parseDataComponent64(elt.getText());
+            data = parseDataBase64(elt.getText());
             break;
 
           case Format::BASE64_ZLIB:
           case Format::BASE64_GZIP:
-            data = parseDataCompressed(parseDataComponent64(elt.getText()));
+            data = parseDataCompressed(parseDataBase64(elt.getText()));
             break;
         }
 

@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "Base.h"
+#include "Component.h"
 #include "Geometry.h"
 
 namespace tmx {
@@ -30,7 +30,7 @@ namespace tmx {
    * There four kinds of geometrical objects: rectangles, ellipses, polylines
    * and polygons.
    */
-  class Object : public Base {
+  class Object : public Component {
   public:
     /**
      * @brief A kind of geometrical object.

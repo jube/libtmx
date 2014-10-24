@@ -18,14 +18,14 @@
 
 #include <string>
 
-#include "Base.h"
+#include "Component.h"
 
 namespace tmx {
 
   /**
    * @brief A terrain describes a kind of terrain on the map.
    */
-  class Terrain : public Base {
+  class Terrain : public Component {
   public:
     /**
      * @brief Terrain constructor.

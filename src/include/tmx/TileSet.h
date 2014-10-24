@@ -21,7 +21,7 @@
 
 #include <boost/range/iterator_range.hpp>
 
-#include "Base.h"
+#include "Component.h"
 #include "Geometry.h"
 #include "Image.h"
 #include "Terrain.h"
@@ -32,7 +32,7 @@ namespace tmx {
   /**
    * @brief A tileset is a set of tiles in a single file (image or TSX file).
    */
-  class TileSet : public Base {
+  class TileSet : public Component {
   public:
     /**
      * @brief TileSet constructor.

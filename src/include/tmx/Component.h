@@ -13,8 +13,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#ifndef TMX_BASE_H
-#define TMX_BASE_H
+#ifndef TMX_COMPONENT_H
+#define TMX_COMPONENT_H
 
 #include <map>
 #include <string>
@@ -24,7 +24,7 @@ namespace tmx {
   /**
    * @brief A base class for classes that have properties.
    */
-  class Base {
+  class Component {
   public:
 
     /**
@@ -60,4 +60,4 @@ namespace tmx {
 }
 
 
-#endif // TMX_BASE_H
+#endif // TMX_COMPONENT_H

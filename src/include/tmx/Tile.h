@@ -18,7 +18,7 @@
 
 #include <array>
 
-#include "Base.h"
+#include "Component.h"
 #include "Image.h"
 
 namespace tmx {
@@ -26,7 +26,7 @@ namespace tmx {
   /**
    * @brief A tile is a rectangular part of a tileset.
    */
-  class Tile : public Base {
+  class Tile : public Component {
   public:
     /**
      * @brief Tile constructor.

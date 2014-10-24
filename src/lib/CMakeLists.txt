@@ -5,7 +5,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_definitions(-DZLIB_CONST)
 
 set(LIBTMX_SRC
-  Base.cc
+  Component.cc
   Layers.cc
   LayerVisitor.cc
   Map.cc

@@ -16,7 +16,7 @@
 #ifndef TMX_LAYER_BASE_H
 #define TMX_LAYER_BASE_H
 
-#include "Base.h"
+#include "Component.h"
 
 namespace tmx {
   class LayerVisitor;
@@ -26,7 +26,7 @@ namespace tmx {
    *
    * There are three kinds of layers: image layers, tile layers and object layers.
    */
-  class Layer : public Base {
+  class Layer : public Component {
   public:
     /**
      * @brief Layer constructor.

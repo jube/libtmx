@@ -185,8 +185,8 @@ namespace tmx {
     class Parser {
     public:
 
-      // http://en.wikibooks.org/wiki/Algorithm_implementation/Miscellaneous/Base64
-      std::vector<uint8_t> parseDataBase64(const std::string& input) {
+      // http://en.wikibooks.org/wiki/Algorithm_implementation/Miscellaneous/Component64
+      std::vector<uint8_t> parseDataComponent64(const std::string& input) {
         std::string clean_input = boost::algorithm::erase_all_copy(input, "\n");
         clean_input = boost::algorithm::erase_all_copy(clean_input, " ");
 
@@ -337,12 +337,12 @@ namespace tmx {
             break;
 
           case Format::BASE64:
-            data = parseDataBase64(elt.getText());
+            data = parseDataComponent64(elt.getText());
             break;
 
           case Format::BASE64_ZLIB:
           case Format::BASE64_GZIP:
-            data = parseDataCompressed(parseDataBase64(elt.getText()));
+            data = parseDataCompressed(parseDataComponent64(elt.getText()));
             break;
         }
 
@@ -351,7 +351,7 @@ namespace tmx {
         return data;
       }
 
-      void parseBase(const XMLElementWrapper elt, Base *base) {
+      void parseComponent(const XMLElementWrapper elt, Component *base) {
         elt.parseOneElement("properties", [base](const XMLElementWrapper elt) {
           elt.parseManyElements("property", [base](const XMLElementWrapper elt) {
             std::string name = elt.getStringAttribute("name");
@@ -387,7 +387,7 @@ namespace tmx {
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
         auto image_layer = new ImageLayer(name, opacity, visible);
-        parseBase(elt, image_layer);
+        parseComponent(elt, image_layer);
 
         elt.parseOneElement("image", [image_layer,this](const XMLElementWrapper elt) {
           image_layer->setImage(parseImage(elt));
@@ -433,7 +433,7 @@ namespace tmx {
 
         if (elt.hasChild("polygon")) {
           auto obj = new Polygon(name, type, { x, y }, visible);
-          parseBase(elt, obj);
+          parseComponent(elt, obj);
 
           elt.parseOneElement("polygon", [obj,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
@@ -445,7 +445,7 @@ namespace tmx {
 
         if (elt.hasChild("polyline")) {
           auto obj = new Polyline(name, type, { x, y }, visible);
-          parseBase(elt, obj);
+          parseComponent(elt, obj);
 
           elt.parseOneElement("polyline", [obj,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
@@ -466,12 +466,12 @@ namespace tmx {
 
         if (elt.hasChild("ellipse")) {
           auto obj = new Ellipse(name, type, { x, y }, visible, width, height);
-          parseBase(elt, obj);
+          parseComponent(elt, obj);
           return obj;
         }
 
         auto obj = new Rectangle(name, type, { x, y }, visible, width, height);
-        parseBase(elt, obj);
+        parseComponent(elt, obj);
         return obj;
       }
 
@@ -485,7 +485,7 @@ namespace tmx {
         std::string color = elt.getStringAttribute("color", Requirement::OPTIONAL);
 
         auto object_group = new ObjectLayer(name, opacity, visible, color);
-        parseBase(elt, object_group);
+        parseComponent(elt, object_group);
 
         elt.parseManyElements("object", [object_group,this](const XMLElementWrapper elt) {
           object_group->addObject(parseObject(elt));
@@ -507,7 +507,7 @@ namespace tmx {
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
         auto layer = new TileLayer(name, opacity, visible);
-        parseBase(elt, layer);
+        parseComponent(elt, layer);
 
         elt.parseOneElement("data", [layer,this](const XMLElementWrapper elt) {
           Format format = parseDataFormat(elt);
@@ -591,7 +591,7 @@ namespace tmx {
         unsigned probability = elt.getUIntAttribute("probability", Requirement::OPTIONAL, 100);
 
         auto tile = new Tile(id, terrain, probability);
-        parseBase(elt, tile);
+        parseComponent(elt, tile);
 
         elt.parseOneElement("image", [tile,this](const XMLElementWrapper elt) {
           tile->setImage(parseImage(elt));
@@ -607,7 +607,7 @@ namespace tmx {
         unsigned tile = elt.getUIntAttribute("tile");
 
         auto terrain = new Terrain(name, tile);
-        parseBase(elt, terrain);
+        parseComponent(elt, terrain);
 
         return terrain;
       }
@@ -622,7 +622,7 @@ namespace tmx {
         unsigned margin = elt.getUIntAttribute("margin", Requirement::OPTIONAL);
 
         auto tile_set = new TileSet(firstgid, name, tilewidth, tileheight, spacing, margin);
-        parseBase(elt, tile_set);
+        parseComponent(elt, tile_set);
 
         elt.parseOneElement("tileoffset", [tile_set](const XMLElementWrapper elt) {
           int x = elt.getIntAttribute("x");

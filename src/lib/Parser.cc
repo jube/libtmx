@@ -428,7 +428,7 @@ namespace tmx {
         return ret;
       }
 
-      Object *parseObject(const XMLElementWrapper elt) {
+      std::unique_ptr<Object> parseObject(const XMLElementWrapper elt) {
         assert(elt.is("object"));
 
         std::string name = elt.getStringAttribute("name", Requirement::OPTIONAL);
@@ -437,8 +437,12 @@ namespace tmx {
         unsigned y = elt.getUIntAttribute("y");
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
+        Vector2u origin{x, y};
+
         if (elt.hasChild("polygon")) {
-          auto obj = new Polygon(name, type, { x, y }, visible);
+          auto obj_ptr = makeUnique<Polygon>(name, type, origin, visible);
+          auto obj = obj_ptr.get();
+
           parseComponent(elt, obj);
 
           elt.parseOneElement("polygon", [obj,this](const XMLElementWrapper elt) {
@@ -446,11 +450,13 @@ namespace tmx {
             obj->setPoints(parsePoints(points));
           });
 
-          return obj;
+          return std::move(obj_ptr);
         }
 
         if (elt.hasChild("polyline")) {
-          auto obj = new Polyline(name, type, { x, y }, visible);
+          auto obj_ptr = makeUnique<Polyline>(name, type, origin, visible);
+          auto obj = obj_ptr.get();
+
           parseComponent(elt, obj);
 
           elt.parseOneElement("polyline", [obj,this](const XMLElementWrapper elt) {
@@ -458,27 +464,37 @@ namespace tmx {
             obj->setPoints(parsePoints(points));
           });
 
-          return obj;
+          return std::move(obj_ptr);
         }
 
         if (elt.hasAttribute("gid")) {
           unsigned gid = elt.getUIntAttribute("gid");
-          auto obj = new TileObject(name, type, { x, y }, visible, gid);
-          return obj;
+          auto obj_ptr = makeUnique<TileObject>(name, type, origin, visible, gid);
+          auto obj = obj_ptr.get();
+
+          parseComponent(elt, obj);
+
+          return std::move(obj_ptr);
         }
 
         unsigned width = elt.getUIntAttribute("width");
         unsigned height = elt.getUIntAttribute("height");
 
         if (elt.hasChild("ellipse")) {
-          auto obj = new Ellipse(name, type, { x, y }, visible, width, height);
+          auto obj_ptr = makeUnique<Ellipse>(name, type, origin, visible, width, height);
+          auto obj = obj_ptr.get();
+
           parseComponent(elt, obj);
-          return obj;
+
+          return std::move(obj_ptr);
         }
 
-        auto obj = new Rectangle(name, type, { x, y }, visible, width, height);
+        auto obj_ptr = makeUnique<Rectangle>(name, type, origin, visible, width, height);
+        auto obj = obj_ptr.get();
+
         parseComponent(elt, obj);
-        return obj;
+
+        return std::move(obj_ptr);
       }
 
       std::unique_ptr<ObjectLayer> parseObjectGroup(const XMLElementWrapper elt) {

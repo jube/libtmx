@@ -38,15 +38,6 @@ namespace tmx {
     {
     }
 
-    /**
-     * @brief ObjectLayer destructor.
-     */
-    ~ObjectLayer() {
-      for (auto item : m_objects) {
-        delete item;
-      }
-    }
-
     virtual void accept(LayerVisitor& visitor);
 
     /**
@@ -63,14 +54,14 @@ namespace tmx {
      *
      * @param obj the object
      */
-    void addObject(Object *obj) {
-      m_objects.emplace_back(obj);
+    void addObject(std::unique_ptr<Object> obj) {
+      m_objects.emplace_back(std::move(obj));
     }
 
     /**
      * @brief An object iterator.
      */
-    typedef std::vector<Object*>::const_iterator iterator;
+    typedef std::vector<std::unique_ptr<Object>>::const_iterator iterator;
 
     /**
      * @brief Get the begin iterator on the objects.
@@ -92,7 +83,7 @@ namespace tmx {
 
   private:
     const std::string m_color;
-    std::vector<Object*> m_objects;
+    std::vector<std::unique_ptr<Object>> m_objects;
   };
 
 }

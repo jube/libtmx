@@ -20,6 +20,12 @@ add_library(tmx0 SHARED
 
 target_link_libraries(tmx0 ${TINYXML2_LDFLAGS} ${ZLIB_LIBRARIES} ${Boost_LIBRARIES})
 
+set_target_properties(tmx0
+  PROPERTIES
+  VERSION ${CPACK_PACKAGE_VERSION}
+  SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}
+)
+
 install(
   TARGETS tmx0
   LIBRARY DESTINATION lib

@@ -37,13 +37,6 @@ namespace tmx {
     }
 
     /**
-     * @brief Tile destructor.
-     */
-    ~Tile() {
-      delete m_image;
-    }
-
-    /**
      * @brief Get the local id of the tile.
      *
      * @return the local id of the tile
@@ -111,8 +104,8 @@ namespace tmx {
      *
      * @param image the image of this tile
      */
-    void setImage(Image *image) {
-      m_image = image;
+    void setImage(std::unique_ptr<Image> image) {
+      m_image = std::move(image);
     }
 
     /**
@@ -121,7 +114,7 @@ namespace tmx {
      * @returns true if the tile has an image (generally false)
      */
     bool hasImage() const {
-      return m_image != nullptr;
+      return m_image.get() != nullptr;
     }
 
     /**
@@ -130,7 +123,7 @@ namespace tmx {
      * @returns the image of this tile
      */
     const Image *getImage() const {
-      return m_image;
+      return m_image.get();
     }
 
   private:
@@ -138,7 +131,7 @@ namespace tmx {
     const std::array<unsigned, 4> m_terrain;
     const unsigned m_probability;
 
-    const Image *m_image;
+    std::unique_ptr<Image> m_image;
   };
 
 }

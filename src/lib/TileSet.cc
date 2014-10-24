@@ -18,9 +18,9 @@
 namespace tmx {
 
   const Tile *TileSet::getTile(unsigned id) const {
-    for (auto tile : *this) {
+    for (auto& tile : *this) {
       if (tile->getId() == id) {
-        return tile;
+        return tile.get();
       }
     }
 

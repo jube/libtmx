@@ -367,7 +367,7 @@ namespace tmx {
         });
       }
 
-      Image *parseImage(const XMLElementWrapper elt) {
+      std::unique_ptr<Image> parseImage(const XMLElementWrapper elt) {
         assert(elt.is("image"));
 
         std::string format = elt.getStringAttribute("format", Requirement::OPTIONAL);
@@ -380,7 +380,7 @@ namespace tmx {
           assert(false && "Not implemented"); // TODO
         });
 
-        return new Image(format, current_path / source, trans, width, height);
+        return makeUnique<Image>(format, current_path / source, trans, width, height);
       }
 
       std::unique_ptr<ImageLayer> parseImageLayer(const XMLElementWrapper elt) {
@@ -574,7 +574,7 @@ namespace tmx {
         return layer_ptr;
       }
 
-      Tile *parseTile(const XMLElementWrapper elt) {
+      std::unique_ptr<Tile> parseTile(const XMLElementWrapper elt) {
         assert(elt.is("tile"));
 
         unsigned id = elt.getUIntAttribute("id");
@@ -600,26 +600,30 @@ namespace tmx {
 
         unsigned probability = elt.getUIntAttribute("probability", Requirement::OPTIONAL, 100);
 
-        auto tile = new Tile(id, terrain, probability);
+        auto tile_ptr = makeUnique<Tile>(id, terrain, probability);
+        auto tile = tile_ptr.get();
+
         parseComponent(elt, tile);
 
         elt.parseOneElement("image", [tile,this](const XMLElementWrapper elt) {
           tile->setImage(parseImage(elt));
         });
 
-        return tile;
+        return tile_ptr;
       }
 
-      Terrain *parseTerrain(const XMLElementWrapper elt) {
+      std::unique_ptr<Terrain> parseTerrain(const XMLElementWrapper elt) {
         assert(elt.is("terrain"));
 
         std::string name = elt.getStringAttribute("name");
         unsigned tile = elt.getUIntAttribute("tile");
 
-        auto terrain = new Terrain(name, tile);
+        auto terrain_ptr = makeUnique<Terrain>(name, tile);
+        auto terrain = terrain_ptr.get();
+
         parseComponent(elt, terrain);
 
-        return terrain;
+        return terrain_ptr;
       }
 
       std::unique_ptr<TileSet> parseTileSetFromElement(unsigned firstgid, const XMLElementWrapper elt) {

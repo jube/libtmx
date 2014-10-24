@@ -44,21 +44,6 @@ namespace tmx {
     }
 
     /**
-     * @brief TileSet destructor.
-     */
-    ~TileSet() {
-      delete m_image;
-
-      for (auto item : m_terrains) {
-        delete item;
-      }
-
-      for (auto item : m_tiles) {
-        delete item;
-      }
-    }
-
-    /**
      * @brief Get the first global id of this tileset.
      *
      * @return the first global id of the tileset
@@ -146,8 +131,8 @@ namespace tmx {
      *
      * @param image the image associated to the tileset
      */
-    void setImage(Image *image) {
-      m_image = image;
+    void setImage(std::unique_ptr<Image> image) {
+      m_image = std::move(image);
     }
 
     /**
@@ -156,7 +141,7 @@ namespace tmx {
      * @returns true if the tileset has an image
      */
     bool hasImage() const {
-      return m_image != nullptr;
+      return m_image.get() != nullptr;
     }
 
     /**
@@ -165,7 +150,7 @@ namespace tmx {
      * @returns the image associated to the tileset
      */
     const Image *getImage() const {
-      return m_image;
+      return m_image.get();
     }
 
     /**
@@ -173,14 +158,14 @@ namespace tmx {
      *
      * @param terrain the terrain information
      */
-    void addTerrain(Terrain *terrain) {
-      m_terrains.emplace_back(terrain);
+    void addTerrain(std::unique_ptr<Terrain> terrain) {
+      m_terrains.emplace_back(std::move(terrain));
     }
 
     /**
      * @brief A terrain range.
      */
-    typedef boost::iterator_range<std::vector<Terrain*>::const_iterator> const_terrain_range;
+    typedef boost::iterator_range<std::vector<std::unique_ptr<Terrain>>::const_iterator> const_terrain_range;
 
     /**
      * @brief Get the terrains.
@@ -196,14 +181,14 @@ namespace tmx {
      *
      * @param tile the tile
      */
-    void addTile(Tile *tile) {
-      m_tiles.emplace_back(tile);
+    void addTile(std::unique_ptr<Tile> tile) {
+      m_tiles.emplace_back(std::move(tile));
     }
 
     /**
      * @brief A tile iterator.
      */
-    typedef std::vector<Tile*>::const_iterator const_iterator;
+    typedef std::vector<std::unique_ptr<Tile>>::const_iterator const_iterator;
 
     /**
      * @brief Get the begin iterator on the tiles.
@@ -251,9 +236,9 @@ namespace tmx {
     int m_x;
     int m_y;
 
-    const Image *m_image;
-    std::vector<Terrain*> m_terrains;
-    std::vector<Tile*> m_tiles;
+    std::unique_ptr<Image> m_image;
+    std::vector<std::unique_ptr<Terrain>> m_terrains;
+    std::vector<std::unique_ptr<Tile>> m_tiles;
   };
 
 }

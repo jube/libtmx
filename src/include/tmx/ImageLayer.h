@@ -34,13 +34,6 @@ namespace tmx {
     {
     }
 
-    /**
-     * @brief ImageLayer destructor
-     */
-    ~ImageLayer() {
-      delete m_image;
-    }
-
     virtual void accept(LayerVisitor& visitor);
 
     /**
@@ -48,8 +41,8 @@ namespace tmx {
      *
      * @param image the image
      */
-    void setImage(Image *image) {
-      m_image = image;
+    void setImage(std::unique_ptr<Image> image) {
+      m_image = std::move(image);
     }
 
     /**
@@ -58,11 +51,11 @@ namespace tmx {
      * @returns the image
      */
     const Image *getImage() const {
-      return m_image;
+      return m_image.get();
     }
 
   private:
-    const Image *m_image;
+    std::unique_ptr<Image> m_image;
   };
 
 }

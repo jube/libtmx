@@ -17,11 +17,11 @@
 
 namespace tmx {
 
-  bool Component::hasProperty(const std::string& key) const {
+  bool Component::hasProperty(const std::string& key) const noexcept {
     return m_prop.count(key) > 0;
   }
 
-  const std::string& Component::getProperty(const std::string& key, const std::string& def) const {
+  const std::string& Component::getProperty(const std::string& key, const std::string& def) const noexcept {
     auto it = m_prop.find(key);
 
     if (it != m_prop.end()) {

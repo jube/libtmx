@@ -17,7 +17,7 @@
 
 namespace tmx {
 
-  const Tile *TileSet::getTile(unsigned id) const {
+  const Tile *TileSet::getTile(unsigned id) const noexcept {
     for (auto& tile : *this) {
       if (tile->getId() == id) {
         return tile.get();
@@ -27,7 +27,7 @@ namespace tmx {
     return nullptr;
   }
 
-  Rect TileSet::getCoords(unsigned id, Size size) const {
+  Rect TileSet::getCoords(unsigned id, Size size) const noexcept {
     unsigned width = (size.width - 2 * m_margin + m_spacing) / (m_tilewidth + m_spacing); // number of tiles
     unsigned height = (size.height - 2 * m_margin + m_spacing) / (m_tileheight + m_spacing); // number of tiles
 

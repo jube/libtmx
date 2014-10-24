@@ -45,7 +45,7 @@ namespace tmx {
      *
      * @return the color to display the objects
      */
-    const std::string& getColor() {
+    const std::string& getColor() noexcept {
       return m_color;
     }
 
@@ -68,7 +68,7 @@ namespace tmx {
      *
      * @return the begin iterator
      */
-    const_iterator begin() const {
+    const_iterator begin() const noexcept {
       return m_objects.cbegin();
     }
 
@@ -77,7 +77,7 @@ namespace tmx {
      *
      * @return the end iterator
      */
-    const_iterator end() const {
+    const_iterator end() const noexcept {
       return m_objects.cend();
     }
 

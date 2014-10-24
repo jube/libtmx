@@ -41,7 +41,7 @@ namespace tmx {
      *
      * @return the local id of the tile
      */
-    unsigned getId() const {
+    unsigned getId() const noexcept {
       return m_id;
     }
 
@@ -50,7 +50,7 @@ namespace tmx {
      *
      * @returns the terrains
      */
-    const std::array<unsigned, 4>& getTerrain() const {
+    const std::array<unsigned, 4>& getTerrain() const noexcept {
       return m_terrain;
     }
 
@@ -59,7 +59,7 @@ namespace tmx {
      *
      * @return the terrain in the top left corner
      */
-    unsigned getTopLeftTerrain() const {
+    unsigned getTopLeftTerrain() const noexcept {
       return m_terrain[0];
     }
 
@@ -68,7 +68,7 @@ namespace tmx {
      *
      * @return the terrain in the top right corner
      */
-    unsigned getTopRightTerrain() const {
+    unsigned getTopRightTerrain() const noexcept {
       return m_terrain[1];
     }
 
@@ -77,7 +77,7 @@ namespace tmx {
      *
      * @return the terrain in the bottom left corner
      */
-    unsigned getBottomLeftTerrain() const {
+    unsigned getBottomLeftTerrain() const noexcept {
       return m_terrain[2];
     }
 
@@ -86,7 +86,7 @@ namespace tmx {
      *
      * @return the terrain in the bottom right corner
      */
-    unsigned getBottomRightTerrain() const {
+    unsigned getBottomRightTerrain() const noexcept {
       return m_terrain[3];
     }
 
@@ -95,7 +95,7 @@ namespace tmx {
      *
      * @return the probability of this tile
      */
-    unsigned getProbability() const {
+    unsigned getProbability() const noexcept {
       return m_probability;
     }
 
@@ -113,7 +113,7 @@ namespace tmx {
      *
      * @returns true if the tile has an image (generally false)
      */
-    bool hasImage() const {
+    bool hasImage() const noexcept {
       return m_image.get() != nullptr;
     }
 
@@ -122,7 +122,7 @@ namespace tmx {
      *
      * @returns the image of this tile
      */
-    const Image *getImage() const {
+    const Image *getImage() const noexcept {
       return m_image.get();
     }
 

@@ -50,7 +50,7 @@ namespace tmx {
      *
      * @returns the image
      */
-    const Image *getImage() const {
+    const Image *getImage() const noexcept {
       return m_image.get();
     }
 

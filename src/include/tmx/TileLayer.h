@@ -57,7 +57,7 @@ namespace tmx {
      *
      * @return the begin iterator
      */
-    const_iterator begin() const {
+    const_iterator begin() const noexcept {
       return m_cells.cbegin();
     }
 
@@ -66,7 +66,7 @@ namespace tmx {
      *
      * @return the end iterator
      */
-    const_iterator end() const {
+    const_iterator end() const noexcept {
       return m_cells.cend();
     }
 

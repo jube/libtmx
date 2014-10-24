@@ -54,7 +54,7 @@ namespace tmx {
      *
      * @returns the name of the layer
      */
-    const std::string& getName() const {
+    const std::string& getName() const noexcept {
       return m_name;
     }
 
@@ -63,7 +63,7 @@ namespace tmx {
      *
      * @returns the opacity of the layer (0.0 is transparent, 1.0 is opaque)
      */
-    double getOpacity() const {
+    double getOpacity() const noexcept {
       return m_opacity;
     }
 
@@ -72,7 +72,7 @@ namespace tmx {
      *
      * @returns true if the layer is visible
      */
-    bool isVisible() const {
+    bool isVisible() const noexcept {
       return m_visible;
     }
 

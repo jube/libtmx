@@ -19,7 +19,7 @@
 
 namespace tmx {
 
-  TileSet *Map::getTileSetFromGID(unsigned gid) const {
+  TileSet *Map::getTileSetFromGID(unsigned gid) const noexcept {
     for (const auto &tileset : getTileSets() | boost::adaptors::reversed) {
       if (tileset->getFirstGID() <= gid) {
         return tileset.get();

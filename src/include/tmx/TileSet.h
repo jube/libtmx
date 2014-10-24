@@ -48,7 +48,7 @@ namespace tmx {
      *
      * @return the first global id of the tileset
      */
-    unsigned getFirstGID() const {
+    unsigned getFirstGID() const noexcept {
       return m_firstgid;
     }
 
@@ -57,7 +57,7 @@ namespace tmx {
      *
      * @return the name of the tileset
      */
-    const std::string& getName() const {
+    const std::string& getName() const noexcept {
       return m_name;
     }
 
@@ -66,7 +66,7 @@ namespace tmx {
      *
      * @return the width of the tiles
      */
-    unsigned getTileWidth() const {
+    unsigned getTileWidth() const noexcept {
       return m_tilewidth;
     }
 
@@ -75,7 +75,7 @@ namespace tmx {
      *
      * @return the height of the tiles
      */
-    unsigned getTileHeight() const {
+    unsigned getTileHeight() const noexcept {
       return m_tileheight;
     }
 
@@ -84,7 +84,7 @@ namespace tmx {
      *
      * @return the spacing between tiles (in pixels)
      */
-    unsigned getSpacing() const {
+    unsigned getSpacing() const noexcept {
       return m_spacing;
     }
 
@@ -93,7 +93,7 @@ namespace tmx {
      *
      * @returns the margin around tiles (in pixels)
      */
-    unsigned getMargin() const {
+    unsigned getMargin() const noexcept {
       return m_margin;
     }
 
@@ -103,7 +103,7 @@ namespace tmx {
      * @param x the x coordinate of the offset
      * @param y the y coordinate of the offset
      */
-    void setOffset(int x, int y) {
+    void setOffset(int x, int y) noexcept {
       m_x = x;
       m_y = y;
     }
@@ -113,7 +113,7 @@ namespace tmx {
      *
      * @returns the x offset of the tileset (in pixels)
      */
-    int getOffsetX() const {
+    int getOffsetX() const noexcept {
       return m_x;
     }
 
@@ -122,7 +122,7 @@ namespace tmx {
      *
      * @returns the y offset of the tileset (in pixels)
      */
-    int getOffsetY() const {
+    int getOffsetY() const noexcept {
       return m_y;
     }
 
@@ -140,7 +140,7 @@ namespace tmx {
      *
      * @returns true if the tileset has an image
      */
-    bool hasImage() const {
+    bool hasImage() const noexcept {
       return m_image.get() != nullptr;
     }
 
@@ -149,7 +149,7 @@ namespace tmx {
      *
      * @returns the image associated to the tileset
      */
-    const Image *getImage() const {
+    const Image *getImage() const noexcept {
       return m_image.get();
     }
 
@@ -172,7 +172,7 @@ namespace tmx {
      *
      * @returns a terrain range
      */
-    const_terrain_range getTerrains() const {
+    const_terrain_range getTerrains() const noexcept {
       return boost::make_iterator_range(m_terrains);
     }
 
@@ -195,7 +195,7 @@ namespace tmx {
      *
      * @return the begin iterator on the tiles
      */
-    const_iterator begin() const {
+    const_iterator begin() const noexcept {
       return m_tiles.cbegin();
     }
 
@@ -204,7 +204,7 @@ namespace tmx {
      *
      * @return the end iterator on the tiles
      */
-    const_iterator end() const {
+    const_iterator end() const noexcept {
       return m_tiles.cend();
     }
 
@@ -214,7 +214,7 @@ namespace tmx {
      * @param id the id of the tile
      * @returns the tile
      */
-    const Tile *getTile(unsigned id) const;
+    const Tile *getTile(unsigned id) const noexcept;
 
     /**
      * @brief Get the coordinates of a tile corresponding to an id.
@@ -223,7 +223,7 @@ namespace tmx {
      * @param size the size of the image corresponding to the tile
      * @returns the coordinates in the form of a rectangle
      */
-    Rect getCoords(unsigned id, Size size) const;
+    Rect getCoords(unsigned id, Size size) const noexcept;
 
   private:
     const unsigned m_firstgid;

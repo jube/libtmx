@@ -339,8 +339,8 @@ namespace tmx {
      *
      * @param points the points
      */
-    void setPoints(const std::vector<Vector2i>& points) {
-      m_points = points;
+    void setPoints(std::vector<Vector2i> points) {
+      m_points = std::move(points);
     }
 
     /**

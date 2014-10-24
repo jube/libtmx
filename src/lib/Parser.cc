@@ -464,7 +464,7 @@ namespace tmx {
 
           elt.parseOneElement("polygon", [obj,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
-            obj->setPoints(parsePoints(points));
+            obj->setPoints(std::move(parsePoints(points)));
           });
 
           return std::move(obj_ptr);
@@ -478,7 +478,7 @@ namespace tmx {
 
           elt.parseOneElement("polyline", [obj,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
-            obj->setPoints(parsePoints(points));
+            obj->setPoints(std::move(parsePoints(points)));
           });
 
           return std::move(obj_ptr);

@@ -1,5 +1,13 @@
 # ChangeLog for `libtmx`
 
+## `libtmx` 0.3
+
+### 0.3.0 (?? ?? 2014)
+
+- add a soname to the library
+- change the name of Base to Component
+
+
 ## `libtmx` 0.2
 
 ### 0.2.0 (7 Jan 2014)

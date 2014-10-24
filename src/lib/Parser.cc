@@ -50,6 +50,22 @@ namespace tmx {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
   }
 
+  static const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+  static const unsigned FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+  static const unsigned FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
+
+  std::tuple<bool, bool, bool, unsigned> decodeGID(unsigned gid) {
+    // Read out the flags
+    bool hflip = (gid & FLIPPED_HORIZONTALLY_FLAG);
+    bool vflip = (gid & FLIPPED_VERTICALLY_FLAG);
+    bool dflip = (gid & FLIPPED_DIAGONALLY_FLAG);
+
+    // Clear the flags
+    gid &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
+
+    return std::make_tuple(hflip, vflip, dflip, gid);
+  }
+
   namespace {
 
     enum class Requirement {
@@ -469,7 +485,11 @@ namespace tmx {
 
         if (elt.hasAttribute("gid")) {
           unsigned gid = elt.getUIntAttribute("gid");
-          auto obj_ptr = makeUnique<TileObject>(name, type, origin, visible, gid);
+
+          bool hflip, vflip, dflip;
+          std::tie(hflip, vflip, dflip, gid) = decodeGID(gid);
+
+          auto obj_ptr = makeUnique<TileObject>(name, type, origin, visible, gid, hflip, vflip, dflip);
           auto obj = obj_ptr.get();
 
           parseComponent(elt, obj);
@@ -518,11 +538,6 @@ namespace tmx {
         return object_group_ptr;
       }
 
-      static const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-      static const unsigned FLIPPED_VERTICALLY_FLAG   = 0x40000000;
-      static const unsigned FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
-
-
       std::unique_ptr<TileLayer> parseLayer(const XMLElementWrapper elt) {
         assert(elt.is("layer"));
 
@@ -550,13 +565,8 @@ namespace tmx {
                 for (std::size_t i = 0; i < sz; i += 4) {
                   unsigned gid = data[i] | (data[i + 1] << 8) | (data[i + 2] << 16) | (data[i + 3] << 24);
 
-                  // Read out the flags
-                  bool hflip = (gid & FLIPPED_HORIZONTALLY_FLAG);
-                  bool vflip = (gid & FLIPPED_VERTICALLY_FLAG);
-                  bool dflip = (gid & FLIPPED_DIAGONALLY_FLAG);
-
-                  // Clear the flags
-                  gid &= ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
+                  bool hflip, vflip, dflip;
+                  std::tie(hflip, vflip, dflip, gid) = decodeGID(gid);
 
                   layer->addCell({ gid, hflip, vflip, dflip });
                 }

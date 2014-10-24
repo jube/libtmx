@@ -187,8 +187,9 @@ namespace tmx {
      * @brief TileObject constructor.
      */
     TileObject(const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned gid)
-      : Object(TILE, name, type, origin, visible), m_gid(gid)
+        const Vector2u& origin, bool visible, unsigned gid, bool hflip, bool vflip, bool dflip)
+      : Object(TILE, name, type, origin, visible)
+      , m_gid(gid), m_hflip(hflip), m_vflip(vflip), m_dflip(dflip)
     {
     }
 
@@ -201,9 +202,38 @@ namespace tmx {
       return m_gid;
     }
 
+    /**
+     * @brief Tell whether the tile object must be flipped horizontally.
+     *
+     * @returns true if the tile object must be flipped horizontally
+     */
+    bool isHorizontallyFlipped() const {
+      return m_hflip;
+    }
+
+    /**
+     * @brief Tell whether the tile object must be flipped vertically.
+     *
+     * @returns true if the tile object must be flipped vertically
+     */
+    bool isVerticallyFlipped() const {
+      return m_vflip;
+    }
+
+    /**
+     * @brief Tell whether the tile object must be flipped diagonally.
+     *
+     * @returns true if the tile object must be flipped diagonally
+     */
+    bool isDiagonallyFlipped() const {
+      return m_dflip;
+    }
+
   private:
     const unsigned m_gid;
-
+    bool m_hflip;
+    bool m_vflip;
+    bool m_dflip;
   };
 
   /**

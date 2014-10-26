@@ -72,6 +72,10 @@ namespace tmx {
     }
 
     /**
+     * @name Properties
+     * @{
+     */
+    /**
      * @brief Get the version of the TMX format.
      *
      * @returns the version of the TMX format (generally "1.0")
@@ -142,7 +146,17 @@ namespace tmx {
     RenderOrder getRenderOrder() const noexcept {
       return m_render_order;
     }
+    /** @} */
 
+    /**
+     * @brief A tileset range.
+     */
+    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<TileSet>>::const_iterator>> const_tileset_range;
+
+    /**
+     * @name Tileset handling
+     * @{
+     */
     /**
      * @brief Add a tileset.
      *
@@ -157,11 +171,6 @@ namespace tmx {
     }
 
     /**
-     * @brief A tileset range.
-     */
-    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<TileSet>>::const_iterator>> const_tileset_range;
-
-    /**
      * @brief Get the tilesets.
      *
      * @return a tileset range
@@ -171,6 +180,24 @@ namespace tmx {
     }
 
     /**
+     * @brief Get the tileset corresponding to a global id.
+     *
+     * @param gid a global id
+     * @returns the corresponding tileset
+     */
+    const TileSet *getTileSetFromGID(unsigned gid) const noexcept;
+    /** @} */
+
+    /**
+     * @brief A layer range.
+     */
+    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<Layer>>::const_iterator>> const_layer_range;
+
+    /**
+     * @name Layer handling
+     * @{
+     */
+    /**
      * @brief Add a layer.
      *
      * @param layer the layer
@@ -178,11 +205,6 @@ namespace tmx {
     void addLayer(std::unique_ptr<Layer> layer) {
       m_layers.emplace_back(std::move(layer));
     }
-
-    /**
-     * @brief A layer range.
-     */
-    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<Layer>>::const_iterator>> const_layer_range;
 
     /**
      * @brief Get the layers.
@@ -203,15 +225,12 @@ namespace tmx {
         layer->accept(*this, visitor);
       }
     }
+    /** @} */
 
     /**
-     * @brief Get the tileset corresponding to a global id.
-     *
-     * @param gid a global id
-     * @returns the corresponding tileset
+     * @name Map parsing
+     * @{
      */
-    const TileSet *getTileSetFromGID(unsigned gid) const noexcept;
-
     /**
      * @brief Parse a TMX file.
      *
@@ -219,6 +238,7 @@ namespace tmx {
      * @returns a map
      */
     static std::unique_ptr<Map> parseFile(const boost::filesystem::path& filename);
+    /** @} */
 
   private:
     const std::string m_version;

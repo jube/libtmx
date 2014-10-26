@@ -46,6 +46,10 @@ namespace tmx {
     }
 
     /**
+     * @name Properties
+     * @{
+     */
+    /**
      * @brief Get the first global id of this tileset.
      *
      * @return the first global id of the tileset
@@ -127,7 +131,12 @@ namespace tmx {
     int getOffsetY() const noexcept {
       return m_y;
     }
+    /** @} */
 
+    /**
+     * @name Image handing
+     * @{
+     */
     /**
      * @brief Set an image associated to the tileset.
      *
@@ -154,7 +163,17 @@ namespace tmx {
     const Image *getImage() const noexcept {
       return m_image.get();
     }
+    /** @} */
 
+    /**
+     * @brief A terrain range.
+     */
+    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<Terrain>>::const_iterator>> const_terrain_range;
+
+    /**
+     * @name Terrain handling
+     * @{
+     */
     /**
      * @brief Add terrain information to the tileset.
      *
@@ -165,11 +184,6 @@ namespace tmx {
     }
 
     /**
-     * @brief A terrain range.
-     */
-    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<Terrain>>::const_iterator>> const_terrain_range;
-
-    /**
      * @brief Get the terrains.
      *
      * @returns a terrain range
@@ -177,7 +191,17 @@ namespace tmx {
     const_terrain_range getTerrains() const noexcept {
       return boost::make_iterator_range(m_terrains) | boost::adaptors::transformed(Adaptor());
     }
+    /** @} */
 
+    /**
+     * @brief A tile iterator.
+     */
+    typedef boost::transform_iterator<Adaptor, std::vector<std::unique_ptr<Tile>>::const_iterator> const_iterator;
+
+    /**
+     * @name Tile handling
+     * @{
+     */
     /**
      * @brief Add a tile to the tileset.
      *
@@ -186,11 +210,6 @@ namespace tmx {
     void addTile(std::unique_ptr<Tile> tile) {
       m_tiles.emplace_back(std::move(tile));
     }
-
-    /**
-     * @brief A tile iterator.
-     */
-    typedef boost::transform_iterator<Adaptor, std::vector<std::unique_ptr<Tile>>::const_iterator> const_iterator;
 
     /**
      * @brief Get the begin iterator on the tiles.
@@ -226,6 +245,7 @@ namespace tmx {
      * @returns the coordinates in the form of a rectangle
      */
     Rect getCoords(unsigned id, Size size) const noexcept;
+    /** @} */
 
   private:
     const unsigned m_firstgid;

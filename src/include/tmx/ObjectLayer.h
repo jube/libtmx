@@ -18,6 +18,9 @@
 
 #include <vector>
 
+#include <boost/iterator/transform_iterator.hpp>
+
+#include "Adaptor.h"
 #include "Layer.h"
 #include "Object.h"
 
@@ -61,7 +64,7 @@ namespace tmx {
     /**
      * @brief An object iterator.
      */
-    typedef std::vector<std::unique_ptr<Object>>::const_iterator const_iterator;
+    typedef boost::transform_iterator<Adaptor, std::vector<std::unique_ptr<Object>>::const_iterator> const_iterator;
 
     /**
      * @brief Get the begin iterator on the objects.
@@ -69,7 +72,7 @@ namespace tmx {
      * @return the begin iterator
      */
     const_iterator begin() const noexcept {
-      return m_objects.cbegin();
+      return boost::make_transform_iterator<Adaptor>(m_objects.cbegin());
     }
 
     /**
@@ -78,7 +81,7 @@ namespace tmx {
      * @return the end iterator
      */
     const_iterator end() const noexcept {
-      return m_objects.cend();
+      return boost::make_transform_iterator<Adaptor>(m_objects.cend());
     }
 
   private:

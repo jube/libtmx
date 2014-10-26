@@ -13,20 +13,21 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#include <tmx/Map.h>
+#ifndef TMX_ADAPTOR_H
+#define TMX_ADAPTOR_H
 
-#include <boost/range/adaptor/reversed.hpp>
+#include <memory>
+
 
 namespace tmx {
 
-  const TileSet *Map::getTileSetFromGID(unsigned gid) const noexcept {
-    for (auto tileset : getTileSets() | boost::adaptors::reversed) {
-      if (tileset->getFirstGID() <= gid) {
-        return tileset;
-      }
+  struct Adaptor {
+    template<typename T>
+    const T *operator()(const std::unique_ptr<T>& p) const {
+      return p.get();
     }
-
-    return nullptr;
-  }
+  };
 
 }
+
+#endif // TMX_ADAPTOR_H

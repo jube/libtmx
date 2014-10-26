@@ -159,7 +159,7 @@ namespace tmx {
     /**
      * @brief A tileset range.
      */
-    typedef boost::iterator_range<std::vector<std::unique_ptr<TileSet>>::const_iterator> const_tileset_range;
+    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<TileSet>>::const_iterator>> const_tileset_range;
 
     /**
      * @brief Get the tilesets.
@@ -167,7 +167,7 @@ namespace tmx {
      * @return a tileset range
      */
     const_tileset_range getTileSets() const noexcept {
-      return boost::make_iterator_range(m_tilesets);
+      return boost::make_iterator_range(m_tilesets) | boost::adaptors::transformed(Adaptor());
     }
 
     /**
@@ -182,7 +182,7 @@ namespace tmx {
     /**
      * @brief A layer range.
      */
-    typedef boost::iterator_range<std::vector<std::unique_ptr<Layer>>::const_iterator> const_layer_range;
+    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<Layer>>::const_iterator>> const_layer_range;
 
     /**
      * @brief Get the layers.
@@ -190,7 +190,7 @@ namespace tmx {
      * @returns a layer range
      */
     const_layer_range getLayers() const noexcept {
-      return boost::make_iterator_range(m_layers);
+      return boost::make_iterator_range(m_layers) | boost::adaptors::transformed(Adaptor());
     }
 
     /**
@@ -199,7 +199,7 @@ namespace tmx {
      * @param visitor the visitor
      */
     void visitLayers(LayerVisitor& visitor) const {
-      for (auto& layer : m_layers) {
+      for (auto layer : getLayers()) {
         layer->accept(*this, visitor);
       }
     }
@@ -210,7 +210,7 @@ namespace tmx {
      * @param gid a global id
      * @returns the corresponding tileset
      */
-    TileSet *getTileSetFromGID(unsigned gid) const noexcept;
+    const TileSet *getTileSetFromGID(unsigned gid) const noexcept;
 
     /**
      * @brief Parse a TMX file.

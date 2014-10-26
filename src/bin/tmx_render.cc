@@ -158,12 +158,12 @@ public:
 
     std::printf("Rendering object layer '%s'.\n", layer.getName().c_str());
 
-    for (auto& obj : layer) {
+    for (auto obj : layer) {
       if (!obj->isTile()) {
         continue;
       }
 
-      auto tile = static_cast<tmx::TileObject *>(obj.get());
+      auto tile = static_cast<const tmx::TileObject *>(obj);
 
       QPoint origin(tile->getX(), tile->getY());
 

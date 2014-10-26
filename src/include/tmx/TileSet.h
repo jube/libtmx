@@ -20,7 +20,9 @@
 #include <vector>
 
 #include <boost/range/iterator_range.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
+#include "Adaptor.h"
 #include "Component.h"
 #include "Geometry.h"
 #include "Image.h"
@@ -165,7 +167,7 @@ namespace tmx {
     /**
      * @brief A terrain range.
      */
-    typedef boost::iterator_range<std::vector<std::unique_ptr<Terrain>>::const_iterator> const_terrain_range;
+    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<Terrain>>::const_iterator>> const_terrain_range;
 
     /**
      * @brief Get the terrains.
@@ -173,7 +175,7 @@ namespace tmx {
      * @returns a terrain range
      */
     const_terrain_range getTerrains() const noexcept {
-      return boost::make_iterator_range(m_terrains);
+      return boost::make_iterator_range(m_terrains) | boost::adaptors::transformed(Adaptor());
     }
 
     /**
@@ -188,7 +190,7 @@ namespace tmx {
     /**
      * @brief A tile iterator.
      */
-    typedef std::vector<std::unique_ptr<Tile>>::const_iterator const_iterator;
+    typedef boost::transform_iterator<Adaptor, std::vector<std::unique_ptr<Tile>>::const_iterator> const_iterator;
 
     /**
      * @brief Get the begin iterator on the tiles.
@@ -196,7 +198,7 @@ namespace tmx {
      * @return the begin iterator on the tiles
      */
     const_iterator begin() const noexcept {
-      return m_tiles.cbegin();
+      return boost::make_transform_iterator<Adaptor>(m_tiles.cbegin());
     }
 
     /**
@@ -205,7 +207,7 @@ namespace tmx {
      * @return the end iterator on the tiles
      */
     const_iterator end() const noexcept {
-      return m_tiles.cend();
+      return boost::make_transform_iterator<Adaptor>(m_tiles.cend());
     }
 
     /**

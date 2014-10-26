@@ -21,7 +21,17 @@
 
 namespace tmx {
 
+  /**
+   * @brief An adaptor to get raw pointer from a unique pointer
+   */
   struct Adaptor {
+
+    /**
+     * @brief Get the raw pointer from a unique pointer
+     *
+     * @param p the unique pointer
+     * @return the corresponding raw pointer
+     */
     template<typename T>
     const T *operator()(const std::unique_ptr<T>& p) const {
       return p.get();

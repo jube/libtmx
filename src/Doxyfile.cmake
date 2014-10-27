@@ -788,32 +788,43 @@ FILE_PATTERNS          = *.c \
                          *.cxx \
                          *.cpp \
                          *.c++ \
-                         *.d \
                          *.java \
                          *.ii \
                          *.ixx \
                          *.ipp \
                          *.i++ \
                          *.inl \
+                         *.idl \
+                         *.ddl \
+                         *.odl \
                          *.h \
                          *.hh \
                          *.hxx \
                          *.hpp \
                          *.h++ \
-                         *.idl \
-                         *.odl \
                          *.cs \
+                         *.d \
                          *.php \
-                         *.php3 \
+                         *.php4 \
+                         *.php5 \
+                         *.phtml \
                          *.inc \
                          *.m \
+                         *.markdown \
+                         *.md \
                          *.mm \
                          *.dox \
                          *.py \
                          *.f90 \
                          *.f \
+                         *.for \
+                         *.tcl \
                          *.vhd \
-                         *.vhdl
+                         *.vhdl \
+                         *.ucf \
+                         *.qsf \
+                         *.as \
+                         *.js
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -2127,7 +2138,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # set to NO
 # The default value is: YES.
 
-HAVE_DOT               = NO
+HAVE_DOT               = YES
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is allowed
 # to run in parallel. When set to 0 doxygen will base this on the number of
@@ -2283,7 +2294,7 @@ DIRECTORY_GRAPH        = NO
 # The default value is: png.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_IMAGE_FORMAT       = png
+DOT_IMAGE_FORMAT       = png:gd
 
 # If DOT_IMAGE_FORMAT is set to svg, then this option can be set to YES to
 # enable generation of interactive SVG images that allow zooming and panning.

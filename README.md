@@ -12,9 +12,10 @@
 
 * [TinyXML2](http://www.grinninglizard.com/tinyxml2/)
 * [ZLib](http://www.zlib.net/)
-* [Boost.Filesystem](http://www.boost.org/libs/filesystem/‎)
-* [Boost.Range](www.boost.org/libs/range/) (header only library)
-* [Boost String Algorithms](http://www.boost.org/libs/algorithm/string) (header only library)
+* [Boost.Filesystem](http://www.boost.org/doc/libs/release/libs/filesystem/)
+* [Boost.Iterator](http://www.boost.org/doc/libs/release/libs/iterator/) (header only library)
+* [Boost.Range](http://www.boost.org/doc/libs/release/libs/range/) (header only library)
+* [Boost String Algorithms](http://www.boost.org/doc/libs/release/libs/algorithm/string/) (header only library)
 
 ## Documentation
 

@@ -13,8 +13,8 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#ifndef TMX_BASE_H
-#define TMX_BASE_H
+#ifndef TMX_COMPONENT_H
+#define TMX_COMPONENT_H
 
 #include <map>
 #include <string>
@@ -24,7 +24,7 @@ namespace tmx {
   /**
    * @brief A base class for classes that have properties.
    */
-  class Base {
+  class Component {
   public:
 
     /**
@@ -33,7 +33,7 @@ namespace tmx {
      * @param key the property key
      * @returns true if the object has the given property
      */
-    bool hasProperty(const std::string& key) const;
+    bool hasProperty(const std::string& key) const noexcept;
 
     /**
      * @brief Get a property value.
@@ -42,7 +42,7 @@ namespace tmx {
      * @param def a default value if the property does not exist
      * @returns the value of the given property
      */
-    const std::string& getProperty(const std::string& key, const std::string& def) const;
+    const std::string& getProperty(const std::string& key, const std::string& def) const noexcept;
 
     /**
      * @brief Add a property.
@@ -60,4 +60,4 @@ namespace tmx {
 }
 
 
-#endif // TMX_BASE_H
+#endif // TMX_COMPONENT_H

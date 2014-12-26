@@ -18,14 +18,14 @@
 
 #include <string>
 
-#include "Base.h"
+#include "Component.h"
 
 namespace tmx {
 
   /**
    * @brief A terrain describes a kind of terrain on the map.
    */
-  class Terrain : public Base {
+  class Terrain : public Component {
   public:
     /**
      * @brief Terrain constructor.
@@ -40,7 +40,7 @@ namespace tmx {
      *
      * @returns the name of the terrain
      */
-    const std::string& getName() const {
+    const std::string& getName() const noexcept {
       return m_name;
     }
 
@@ -49,7 +49,7 @@ namespace tmx {
      *
      * @returns the representing tile
      */
-    unsigned getTile() const {
+    unsigned getTile() const noexcept {
       return m_tile;
     }
 

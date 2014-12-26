@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "Base.h"
+#include "Component.h"
 #include "Geometry.h"
 
 namespace tmx {
@@ -30,7 +30,7 @@ namespace tmx {
    * There four kinds of geometrical objects: rectangles, ellipses, polylines
    * and polygons.
    */
-  class Object : public Base {
+  class Object : public Component {
   public:
     /**
      * @brief A kind of geometrical object.
@@ -47,8 +47,8 @@ namespace tmx {
      * @brief Object constructor.
      */
     Object(const Kind kind, const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible)
-      : m_kind(kind), m_name(name), m_type(type), m_origin(origin), m_visible(visible)
+        const Vector2u& origin, double rotation, bool visible)
+      : m_kind(kind), m_name(name), m_type(type), m_origin(origin), m_rotation(rotation), m_visible(visible)
     {
     }
 
@@ -64,7 +64,7 @@ namespace tmx {
      *
      * @return the kind of the object
      */
-    Kind getKind() const {
+    Kind getKind() const noexcept {
       return m_kind;
     }
 
@@ -73,7 +73,7 @@ namespace tmx {
      *
      * @return the name of the object
      */
-    const std::string& getName() const {
+    const std::string& getName() const noexcept {
       return m_name;
     }
 
@@ -82,7 +82,7 @@ namespace tmx {
      *
      * @return the type of the object.
      */
-    const std::string& getType() const {
+    const std::string& getType() const noexcept {
       return m_type;
     }
 
@@ -91,7 +91,7 @@ namespace tmx {
      *
      * @return the x coordinate of the origin
      */
-    unsigned getX() const {
+    unsigned getX() const noexcept {
       return m_origin.x;
     }
 
@@ -100,7 +100,7 @@ namespace tmx {
      *
      * @return the y coordinate of the origin
      */
-    unsigned getY() const {
+    unsigned getY() const noexcept {
       return m_origin.y;
     }
 
@@ -112,8 +112,17 @@ namespace tmx {
      *
      * @return the origin
      */
-    const Vector2u& getOrigin() const {
+    const Vector2u& getOrigin() const noexcept {
       return m_origin;
+    }
+
+    /**
+     * @brief Get the rotation of the object.
+     *
+     * @return the angle of rotation in degrees clockwise
+     */
+    double getRotation() const noexcept {
+      return m_rotation;
     }
 
     /**
@@ -121,7 +130,7 @@ namespace tmx {
      *
      * @returns true if the object is visible
      */
-    bool isVisible() const {
+    bool isVisible() const noexcept {
       return m_visible;
     }
 
@@ -130,7 +139,7 @@ namespace tmx {
      *
      * @returns true if the object is a rectangle
      */
-    bool isRectangle() const {
+    bool isRectangle() const noexcept {
       return m_kind == RECTANGLE;
     }
 
@@ -139,7 +148,7 @@ namespace tmx {
      *
      * @returns true if the object is an ellipse
      */
-    bool isEllipse() const {
+    bool isEllipse() const noexcept {
       return m_kind == ELLIPSE;
     }
 
@@ -148,7 +157,7 @@ namespace tmx {
      *
      * @returns true if the object is a polyline
      */
-    bool isPolyline() const {
+    bool isPolyline() const noexcept {
       return m_kind == POLYLINE;
     }
 
@@ -157,7 +166,7 @@ namespace tmx {
      *
      * @returns true if the object is a polygon
      */
-    bool isPolygon() const {
+    bool isPolygon() const noexcept {
       return m_kind == POLYGON;
     }
 
@@ -166,7 +175,7 @@ namespace tmx {
      *
      * @returns true if the object is a tile
      */
-    bool isTile() const {
+    bool isTile() const noexcept {
       return m_kind == TILE;
     }
 
@@ -175,6 +184,7 @@ namespace tmx {
     const std::string m_name;
     const std::string m_type;
     const Vector2u m_origin;
+    const double m_rotation;
     const bool m_visible;
   };
 
@@ -187,8 +197,9 @@ namespace tmx {
      * @brief TileObject constructor.
      */
     TileObject(const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned gid)
-      : Object(TILE, name, type, origin, visible), m_gid(gid)
+        const Vector2u& origin, double rotation, bool visible, unsigned gid, bool hflip, bool vflip, bool dflip)
+      : Object(TILE, name, type, origin, rotation, visible)
+      , m_gid(gid), m_hflip(hflip), m_vflip(vflip), m_dflip(dflip)
     {
     }
 
@@ -197,13 +208,42 @@ namespace tmx {
      *
      * @return the global id
      */
-    unsigned getGID() const {
+    unsigned getGID() const noexcept {
       return m_gid;
+    }
+
+    /**
+     * @brief Tell whether the tile object must be flipped horizontally.
+     *
+     * @returns true if the tile object must be flipped horizontally
+     */
+    bool isHorizontallyFlipped() const noexcept {
+      return m_hflip;
+    }
+
+    /**
+     * @brief Tell whether the tile object must be flipped vertically.
+     *
+     * @returns true if the tile object must be flipped vertically
+     */
+    bool isVerticallyFlipped() const noexcept {
+      return m_vflip;
+    }
+
+    /**
+     * @brief Tell whether the tile object must be flipped diagonally.
+     *
+     * @returns true if the tile object must be flipped diagonally
+     */
+    bool isDiagonallyFlipped() const noexcept {
+      return m_dflip;
     }
 
   private:
     const unsigned m_gid;
-
+    bool m_hflip;
+    bool m_vflip;
+    bool m_dflip;
   };
 
   /**
@@ -218,8 +258,8 @@ namespace tmx {
      * @brief Boxed constructor.
      */
     Boxed(Kind kind, const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned width, unsigned height)
-      : Object(kind, name, type, origin, visible), m_width(width), m_height(height)
+        const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
+      : Object(kind, name, type, origin, rotation, visible), m_width(width), m_height(height)
     {
     }
 
@@ -228,7 +268,7 @@ namespace tmx {
      *
      * @returns the width of the box
      */
-    unsigned getWidth() const {
+    unsigned getWidth() const noexcept {
       return m_width;
     }
 
@@ -237,7 +277,7 @@ namespace tmx {
      *
      * @returns the height of the box
      */
-    unsigned getHeight() const {
+    unsigned getHeight() const noexcept {
       return m_height;
     }
 
@@ -257,8 +297,8 @@ namespace tmx {
      * @brief Rectangle constructor.
      */
     Rectangle(const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned width, unsigned height)
-      : Boxed(RECTANGLE, name, type, origin, visible, width, height)
+        const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
+      : Boxed(RECTANGLE, name, type, origin, rotation, visible, width, height)
     {
     }
   };
@@ -273,8 +313,8 @@ namespace tmx {
      * @brief Ellipse constructor.
      */
     Ellipse(const std::string& name, const std::string& type,
-        const Vector2u& origin, bool visible, unsigned width, unsigned height)
-      : Boxed(ELLIPSE, name, type, origin, visible, width, height)
+        const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
+      : Boxed(ELLIPSE, name, type, origin, rotation, visible, width, height)
     {
     }
   };
@@ -289,8 +329,8 @@ namespace tmx {
     /**
      * @brief PolyBase constructor.
      */
-    PolyBase(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
-      : Object(kind, name, type, origin, visible)
+    PolyBase(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : Object(kind, name, type, origin, rotation, visible)
     {
     }
 
@@ -299,8 +339,8 @@ namespace tmx {
      *
      * @param points the points
      */
-    void setPoints(const std::vector<Vector2i>& points) {
-      m_points = points;
+    void setPoints(std::vector<Vector2i> points) {
+      m_points = std::move(points);
     }
 
     /**
@@ -313,7 +353,7 @@ namespace tmx {
      *
      * @returns the begin iterator
      */
-    const_iterator begin() const {
+    const_iterator begin() const noexcept {
       return m_points.cbegin();
     }
 
@@ -322,7 +362,7 @@ namespace tmx {
      *
      * @returns the end iterator
      */
-    const_iterator end() const {
+    const_iterator end() const noexcept {
       return m_points.cend();
     }
 
@@ -338,8 +378,8 @@ namespace tmx {
     /**
      * @brief Polyline constructor.
      */
-    Polyline(const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, visible)
+    Polyline(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : PolyBase(POLYLINE, name, type, origin, rotation, visible)
     {
     }
   };
@@ -352,8 +392,8 @@ namespace tmx {
     /**
      * @brief Polygon constructor.
      */
-    Polygon(const std::string& name, const std::string& type, const Vector2u& origin, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, visible)
+    Polygon(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : PolyBase(POLYLINE, name, type, origin, rotation, visible)
     {
     }
   };

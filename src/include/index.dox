@@ -1,0 +1,183 @@
+/**
+
+@mainpage
+
+`libtmx` is a C++11 library for reading [TMX files](https://github.com/bjorn/tiled/wiki/TMX-Map-Format). TMX (Tile Map XML) is a XML dialect used in [Tiled](http://www.mapeditor.org/), a [tile map](http://en.wikipedia.org/wiki/Tile_engine) editor. libtmx is not meant to modify TMX files but to read TMX files. Its main use case is for games that use TMX maps. The library is not a rendering library, so it does not depend on any graphical toolkit.
+
+# Basic usage
+
+First, you have to parse a map file.
+
+~~~{.cc}
+std::unique_ptr<tmx::Map> map = tmx::Map::parseFile(path);
+~~~
+
+Then, you can navigate through the map with the methods of `tmx::Map` or you can define a class that visits every layer thanks to the [visitor pattern](http://en.wikipedia.org/wiki/Visitor_pattern).
+
+~~~{.cc}
+class MyVisitor : public tmx::LayerVisitor {
+
+  virtual void visitTileLayer(const tmx::Map& map, const tmx::TileLayer& layer) override {
+    // do something with this layer
+  }
+
+  virtual void visitObjectLayer(const tmx::Map& map, const tmx::ObjectLayer& layer) override {
+    // do something with this layer
+  }
+
+  virtual void visitImageLayer(const tmx::Map& map, const tmx::ImageLayer& layer) override {
+    // do something with this layer
+  }
+
+}
+~~~
+
+And then, give the visitor to the map.
+
+~~~{.cc}
+MyVisitor visitor;
+map->visitLayers(visitor);
+~~~
+
+For more information, see:
+
+- @ref tile_rendering
+- @ref image_object_rendering
+
+# Licence
+
+This library is open source and is distributed under the [ISC licence](http://opensource.org/licenses/isc-license).
+
+@page tile_rendering How to render tiles with libtmx?
+
+`libtmx` provides some useful tools for rendering tiles from a TMX map, even if `libtmx` is not itself a rendering library. This tutorial provides some hints on how to render tiles in a neutral way. You will have to adapt to your drawing toolkit. More precisely, we assume you use a visitor and want to render a `tmx::TileLayer`. Here is the procedure.
+
+## Get the size of the final surface
+
+First step, let's get some information about the size of the map and the size of the tiles to compute the size of the resulting surface.
+
+~~~{.cc}
+unsigned surface_width = map->getTileWidth() * map->getWidth();
+unsigned surface_height = map->getTileHeight() * map->getHeight();
+~~~
+
+## Visit the layer
+
+Second step, we visit the tile layer.
+
+~~~{.cc}
+virtual void visitTileLayer(const tmx::Map& map, const tmx::TileLayer& layer) override {
+  if (!layer.isVisible()) {
+    return;
+  }
+
+  unsigned k = 0;
+  for (auto cell : layer) {
+    unsigned i = k % map.getWidth();
+    unsigned j = k / map.getWidth();
+    assert(j < map.getHeight());
+
+    unsigned x = i * map.getTileWidth();
+    unsigned y = j * map.getTileHeight();
+
+    unsigned gid = cell.getGID();
+
+    if (gid != 0) {
+      drawGID(map, x, y, gid);
+    }
+
+    k++;
+  }
+}
+~~~
+
+First, it's not necessary to render the layer if it's not visible. This visibility property can be set in Tiled. Then, we visit every cell in the layer. Cells are organised in a [row-major order](http://en.wikipedia.org/wiki/Row-major_order), so we can compute the column `i` and row `j` of the cell, and then the coordinates `x` and `y` of the tile in the rendering surface. Finally, if the `gid` is an actual `gid`, then we draw the tile.
+
+## Draw each tile
+
+Third step, we draw each tile on the rendering surface.
+
+~~~{.cc}
+
+  void drawGID(const tmx::Map& map, unsigned x, unsigned y, unsigned gid) {
+    tmx::TileSet *tileset = map.getTileSetFromGID(gid);
+    gid = gid - tileset->getFirstGID();
+
+    if (tileset->hasImage()) {
+      // Tiled Qt
+
+      tmx::Image *image = tileset->getImage();
+      auto texture = getTexture(image->getSource()); // depends on the toolkit
+
+      tmx::Size size = image->getSize();
+      tmx::Rect rect = tileset->getCoords(gid, size);
+
+      x += tileset->getOffsetX();
+      y += tileset->getOffsetY();
+
+      drawImage(x, y, texture, rect); // depends on the toolkit
+
+    } else {
+      // Tiled Java
+
+      tmx::Tile *tile = tileset->getTile(gid);
+      tmx::Image *image = tile->getImage();
+
+      auto texture = getTexture(image->getSource()); // depends on the toolkit
+      drawImage(x, y, texture); // depends on the toolkit
+
+    }
+  }
+
+~~~
+
+Once the tileset has been computed (according to the documentation of the TMX format), we can compute the id of the tile inside the tileset. Then, in the case of Tiled Qt (the newest version), we get the corresponding image of the tileset and we compute its size (if the size is not present in the TMX file, you must get it from the toolkit). With the id of the tileset and the size of the image, we can compute the rectangular part of the image where the tile is. Finally, we draw the tile on the rendering surface at the `(x,y)` coordinates.
+
+In the case of Tiled Java, the process is a little bit different. We put it here for completeness, in case you have to deal with old TMX files.
+
+@sa @ref image_object_rendering
+
+@page image_object_rendering How to render image objects with libtmx?
+
+An image object is an image that is part of an object layer in Tiled. This image is associated with a tile in a tileset. It is represented by a `tmx::TileObject` in the library. This tutorial provides some hints on how to render this type of object in a neutral way, You should read @ref tile_rendering before reading this tutorial as the first step is the same.
+
+## Visit the layer
+
+We visit the object layer.
+
+~~~{.cc}
+virtual void visitObjectLayer(const tmx::Map& map, const tmx::ObjectLayer &layer) override {
+  if (!layer.isVisible()) {
+    return;
+  }
+
+  for (auto obj : layer) {
+    if (!obj->isTile()) {
+      continue;
+    }
+
+    auto tile = static_cast<tmx::TileObject *>(obj);
+
+    unsigned x = tile->getX();
+    unsigned y = tile->getY();
+    unsigned gid = tile->getGID();
+
+    drawObjectGID(map, x, y, gid);
+  }
+
+}
+~~~
+
+First, it's not necessary to render the layer if it's not visible. This visibility property can be set in Tiled. Then if we find an image object in the objects of this layer, then we get its position and its gid and draw it.
+
+## Draw the image
+
+The procedure for drawing the image is quite the same as the one in @ref tile_rendering, except the call to `drawImage`. Indeed, the origin of the image object is not at the top left of the image but at the bottom left. So the call to `drawImage` is something like:
+
+~~~{.cc}
+drawImage(x, y - height, texture, rect); // depends on the toolkit
+~~~
+
+@sa @ref tile_rendering
+
+*/

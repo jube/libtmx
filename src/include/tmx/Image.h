@@ -43,7 +43,7 @@ namespace tmx {
      *
      * @returns the format of the file or empty string.
      */
-    const std::string& getFormat() const {
+    const std::string& getFormat() const noexcept {
       return m_format;
     }
 
@@ -52,7 +52,7 @@ namespace tmx {
      *
      * @returns the path to the image file
      */
-    const boost::filesystem::path& getSource() const {
+    const boost::filesystem::path& getSource() const noexcept {
       return m_source;
     }
 
@@ -61,7 +61,7 @@ namespace tmx {
      *
      * @returns the transparent color
      */
-    const std::string getTransparent() const {
+    const std::string getTransparent() const noexcept {
       return m_trans;
     }
 
@@ -70,7 +70,7 @@ namespace tmx {
      *
      * @returns the width of the image
      */
-    unsigned getWidth() const {
+    unsigned getWidth() const noexcept {
       return m_width;
     }
 
@@ -79,7 +79,7 @@ namespace tmx {
      *
      * @returns the height of the image
      */
-    unsigned getHeight() const {
+    unsigned getHeight() const noexcept {
       return m_height;
     }
 
@@ -88,7 +88,7 @@ namespace tmx {
      *
      * @returns true if the image has a declared size
      */
-    bool hasSize() const {
+    bool hasSize() const noexcept {
       return m_width > 0 && m_height > 0;
     }
 
@@ -97,7 +97,7 @@ namespace tmx {
      *
      * @returns the size of the image.
      */
-    Size getSize() const {
+    Size getSize() const noexcept {
       return { m_width, m_height };
     }
 

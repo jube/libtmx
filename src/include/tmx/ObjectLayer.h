@@ -18,6 +18,9 @@
 
 #include <vector>
 
+#include <boost/iterator/transform_iterator.hpp>
+
+#include "Adaptor.h"
 #include "Layer.h"
 #include "Object.h"
 
@@ -38,23 +41,14 @@ namespace tmx {
     {
     }
 
-    /**
-     * @brief ObjectLayer destructor.
-     */
-    ~ObjectLayer() {
-      for (auto item : m_objects) {
-        delete item;
-      }
-    }
-
-    virtual void accept(LayerVisitor& visitor);
+    virtual void accept(const Map& map, LayerVisitor& visitor) const override;
 
     /**
      * @brief Get the color used to display the objects.
      *
      * @return the color to display the objects
      */
-    const std::string& getColor() {
+    const std::string& getColor() noexcept {
       return m_color;
     }
 
@@ -63,22 +57,22 @@ namespace tmx {
      *
      * @param obj the object
      */
-    void addObject(Object *obj) {
-      m_objects.emplace_back(obj);
+    void addObject(std::unique_ptr<Object> obj) {
+      m_objects.emplace_back(std::move(obj));
     }
 
     /**
      * @brief An object iterator.
      */
-    typedef std::vector<Object*>::const_iterator iterator;
+    typedef boost::transform_iterator<Adaptor, std::vector<std::unique_ptr<Object>>::const_iterator> const_iterator;
 
     /**
      * @brief Get the begin iterator on the objects.
      *
      * @return the begin iterator
      */
-    iterator begin() const {
-      return m_objects.cbegin();
+    const_iterator begin() const noexcept {
+      return boost::make_transform_iterator<Adaptor>(m_objects.cbegin());
     }
 
     /**
@@ -86,13 +80,13 @@ namespace tmx {
      *
      * @return the end iterator
      */
-    iterator end() const {
-      return m_objects.cend();
+    const_iterator end() const noexcept {
+      return boost::make_transform_iterator<Adaptor>(m_objects.cend());
     }
 
   private:
     const std::string m_color;
-    std::vector<Object*> m_objects;
+    std::vector<std::unique_ptr<Object>> m_objects;
   };
 
 }

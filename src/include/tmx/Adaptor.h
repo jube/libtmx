@@ -13,26 +13,31 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#ifndef TMX_TMX_H
-#define TMX_TMX_H
+#ifndef TMX_ADAPTOR_H
+#define TMX_ADAPTOR_H
 
-#include <boost/filesystem.hpp>
+#include <memory>
 
-#include "Map.h"
 
-/**
- * @brief The namespace for all `libtmx` classes.
- */
 namespace tmx {
 
   /**
-   * @brief Parse a TMX file.
-   *
-   * @param filename the name of the TMX file
-   * @returns a map
+   * @brief An adaptor to get raw pointer from a unique pointer
    */
-  Map *parseMapFile(const boost::filesystem::path& filename);
+  struct Adaptor {
+
+    /**
+     * @brief Get the raw pointer from a unique pointer
+     *
+     * @param p the unique pointer
+     * @return the corresponding raw pointer
+     */
+    template<typename T>
+    const T *operator()(const std::unique_ptr<T>& p) const {
+      return p.get();
+    }
+  };
 
 }
 
-#endif // TMX_TMX_H
+#endif // TMX_ADAPTOR_H

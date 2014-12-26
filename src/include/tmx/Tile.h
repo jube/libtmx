@@ -18,7 +18,7 @@
 
 #include <array>
 
-#include "Base.h"
+#include "Component.h"
 #include "Image.h"
 
 namespace tmx {
@@ -26,7 +26,7 @@ namespace tmx {
   /**
    * @brief A tile is a rectangular part of a tileset.
    */
-  class Tile : public Base {
+  class Tile : public Component {
   public:
     /**
      * @brief Tile constructor.
@@ -37,18 +37,11 @@ namespace tmx {
     }
 
     /**
-     * @brief Tile destructor.
-     */
-    ~Tile() {
-      delete m_image;
-    }
-
-    /**
      * @brief Get the local id of the tile.
      *
      * @return the local id of the tile
      */
-    unsigned getId() const {
+    unsigned getId() const noexcept {
       return m_id;
     }
 
@@ -57,7 +50,7 @@ namespace tmx {
      *
      * @returns the terrains
      */
-    const std::array<unsigned, 4>& getTerrain() const {
+    const std::array<unsigned, 4>& getTerrain() const noexcept {
       return m_terrain;
     }
 
@@ -66,7 +59,7 @@ namespace tmx {
      *
      * @return the terrain in the top left corner
      */
-    unsigned getTopLeftTerrain() const {
+    unsigned getTopLeftTerrain() const noexcept {
       return m_terrain[0];
     }
 
@@ -75,7 +68,7 @@ namespace tmx {
      *
      * @return the terrain in the top right corner
      */
-    unsigned getTopRightTerrain() const {
+    unsigned getTopRightTerrain() const noexcept {
       return m_terrain[1];
     }
 
@@ -84,7 +77,7 @@ namespace tmx {
      *
      * @return the terrain in the bottom left corner
      */
-    unsigned getBottomLeftTerrain() const {
+    unsigned getBottomLeftTerrain() const noexcept {
       return m_terrain[2];
     }
 
@@ -93,7 +86,7 @@ namespace tmx {
      *
      * @return the terrain in the bottom right corner
      */
-    unsigned getBottomRightTerrain() const {
+    unsigned getBottomRightTerrain() const noexcept {
       return m_terrain[3];
     }
 
@@ -102,7 +95,7 @@ namespace tmx {
      *
      * @return the probability of this tile
      */
-    unsigned getProbability() const {
+    unsigned getProbability() const noexcept {
       return m_probability;
     }
 
@@ -111,8 +104,8 @@ namespace tmx {
      *
      * @param image the image of this tile
      */
-    void setImage(Image *image) {
-      m_image = image;
+    void setImage(std::unique_ptr<Image> image) {
+      m_image = std::move(image);
     }
 
     /**
@@ -120,8 +113,8 @@ namespace tmx {
      *
      * @returns true if the tile has an image (generally false)
      */
-    bool hasImage() const {
-      return m_image != nullptr;
+    bool hasImage() const noexcept {
+      return m_image.get() != nullptr;
     }
 
     /**
@@ -129,8 +122,8 @@ namespace tmx {
      *
      * @returns the image of this tile
      */
-    const Image *getImage() const {
-      return m_image;
+    const Image *getImage() const noexcept {
+      return m_image.get();
     }
 
   private:
@@ -138,7 +131,7 @@ namespace tmx {
     const std::array<unsigned, 4> m_terrain;
     const unsigned m_probability;
 
-    const Image *m_image;
+    std::unique_ptr<Image> m_image;
   };
 
 }

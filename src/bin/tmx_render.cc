@@ -6,7 +6,7 @@
 #include <QPainter>
 #include <QCache>
 
-#include <tmx/TMX.h>
+#include <tmx/Map.h>
 #include <tmx/TileLayer.h>
 #include <tmx/ObjectLayer.h>
 
@@ -14,12 +14,8 @@ namespace fs = boost::filesystem;
 
 class LayerRenderer : public tmx::LayerVisitor {
 public:
-  LayerRenderer()
-  : map(nullptr), painter(), tilewidth(0), tileheight(0), width(0), height(0) { }
-
   void renderMap(const fs::path& map_path) {
-
-    map = tmx::parseMapFile(map_path);
+    auto map = tmx::Map::parseFile(map_path);
 
     if (!map) {
       return;
@@ -30,16 +26,16 @@ public:
       return;
     }
 
-    tilewidth = map->getTileWidth();
+    auto tilewidth = map->getTileWidth();
     assert(tilewidth);
 
-    tileheight = map->getTileHeight();
+    auto tileheight = map->getTileHeight();
     assert(tileheight);
 
-    width = map->getWidth();
+    auto width = map->getWidth();
     assert(width);
 
-    height = map->getHeight();
+    auto height = map->getHeight();
     assert(height);
 
     // create surface
@@ -51,35 +47,25 @@ public:
 
     std::printf("Saving image...\n");
     image.save("map.png");
-
-    delete map;
   }
 
 private:
-  tmx::Map *map;
-
   QPainter painter;
-
-  unsigned tilewidth;
-  unsigned tileheight;
-  unsigned width;
-  unsigned height;
-
   QCache<QString, QImage> cache;
 
-  QImage *getTexture(const fs::path& path) {
+  const QImage getTexture(const fs::path& path) {
     QString str(path.string().c_str());
     QImage *img = cache.object(str);
 
     if (img != nullptr) {
-      return img;
+      return *img;
     }
 
     img = new QImage(str);
     assert(!img->isNull());
 
     cache.insert(str, img);
-    return img;
+    return *img;
   }
 
   enum class Alignment {
@@ -87,8 +73,8 @@ private:
     BOTTOM_LEFT,
   };
 
-  void drawGID(const QPoint& origin, unsigned gid, Alignment align) {
-    auto tileset = map->getTileSetFromGID(gid);
+  void drawGID(const tmx::Map& map, const QPoint& origin, unsigned gid, Alignment align) {
+    auto tileset = map.getTileSetFromGID(gid);
     assert(tileset);
     gid = gid - tileset->getFirstGID();
 
@@ -97,14 +83,14 @@ private:
       auto image = tileset->getImage();
       assert(image);
 
-      QImage *texture = getTexture(image->getSource());
+      const QImage texture = getTexture(image->getSource());
 
       tmx::Size size;
 
       if (image->hasSize()) {
         size = image->getSize();
       } else {
-        QSize texture_size = texture->size();
+        QSize texture_size = texture.size();
         assert(texture_size.width() >= 0);
         assert(texture_size.height() >= 0);
         size.width = texture_size.width();
@@ -118,7 +104,10 @@ private:
         offset.ry() -= rect.height;
       }
 
-      painter.drawImage(origin + offset, *texture, QRect(rect.x, rect.y, rect.width, rect.height));
+      offset.rx() += tileset->getOffsetX();
+      offset.ry() += tileset->getOffsetY();
+
+      painter.drawImage(origin + offset, texture, QRect(rect.x, rect.y, rect.width, rect.height));
 
     } else {
 
@@ -129,14 +118,14 @@ private:
       auto image = tile->getImage();
       assert(image);
 
-      QImage *texture = getTexture(image->getSource());
-      painter.drawImage(origin, *texture);
+      const QImage texture = getTexture(image->getSource());
+      painter.drawImage(origin, texture);
 
     }
   }
 
 public:
-  virtual void visitTileLayer(tmx::TileLayer& layer) {
+  virtual void visitTileLayer(const tmx::Map& map, const tmx::TileLayer& layer) override {
     if (!layer.isVisible()) {
       return;
     }
@@ -145,16 +134,16 @@ public:
 
     unsigned k = 0;
     for (auto cell : layer) {
-      unsigned i = k % width;
-      unsigned j = k / width;
-      assert(j < height);
+      unsigned i = k % map.getWidth();
+      unsigned j = k / map.getWidth();
+      assert(j < map.getHeight());
 
-      QPoint origin(i * tilewidth, j * tileheight);
+      QPoint origin(i * map.getTileWidth(), j * map.getTileHeight());
 
       unsigned gid = cell.getGID();
 
       if (gid != 0) {
-        drawGID(origin, gid, Alignment::TOP_LEFT);
+        drawGID(map, origin, gid, Alignment::TOP_LEFT);
       }
 
       k++;
@@ -162,7 +151,7 @@ public:
 
   }
 
-  virtual void visitObjectLayer(tmx::ObjectLayer &layer) {
+  virtual void visitObjectLayer(const tmx::Map& map, const tmx::ObjectLayer &layer) override {
     if (!layer.isVisible()) {
       return;
     }
@@ -174,14 +163,14 @@ public:
         continue;
       }
 
-      auto tile = static_cast<tmx::TileObject *>(obj);
+      auto tile = static_cast<const tmx::TileObject *>(obj);
 
       QPoint origin(tile->getX(), tile->getY());
 
       unsigned gid = tile->getGID();
       assert(gid != 0);
 
-      drawGID(origin, gid, Alignment::BOTTOM_LEFT);
+      drawGID(map, origin, gid, Alignment::BOTTOM_LEFT);
     }
 
   }

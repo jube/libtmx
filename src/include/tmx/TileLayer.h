@@ -36,7 +36,7 @@ namespace tmx {
     {
     }
 
-    virtual void accept(LayerVisitor& visitor);
+    virtual void accept(const Map& map, LayerVisitor& visitor) const override;
 
     /**
      * @brief Add a cell to the layer.
@@ -57,7 +57,7 @@ namespace tmx {
      *
      * @return the begin iterator
      */
-    const_iterator begin() {
+    const_iterator begin() const noexcept {
       return m_cells.cbegin();
     }
 
@@ -66,7 +66,7 @@ namespace tmx {
      *
      * @return the end iterator
      */
-    const_iterator end() {
+    const_iterator end() const noexcept {
       return m_cells.cend();
     }
 

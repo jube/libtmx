@@ -20,8 +20,10 @@
 #include <vector>
 
 #include <boost/range/iterator_range.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
-#include "Base.h"
+#include "Adaptor.h"
+#include "Component.h"
 #include "Geometry.h"
 #include "Image.h"
 #include "Terrain.h"
@@ -32,7 +34,7 @@ namespace tmx {
   /**
    * @brief A tileset is a set of tiles in a single file (image or TSX file).
    */
-  class TileSet : public Base {
+  class TileSet : public Component {
   public:
     /**
      * @brief TileSet constructor.
@@ -44,26 +46,15 @@ namespace tmx {
     }
 
     /**
-     * @brief TileSet destructor.
+     * @name Properties
+     * @{
      */
-    ~TileSet() {
-      delete m_image;
-
-      for (auto item : m_terrains) {
-        delete item;
-      }
-
-      for (auto item : m_tiles) {
-        delete item;
-      }
-    }
-
     /**
      * @brief Get the first global id of this tileset.
      *
      * @return the first global id of the tileset
      */
-    unsigned getFirstGID() const {
+    unsigned getFirstGID() const noexcept {
       return m_firstgid;
     }
 
@@ -72,7 +63,7 @@ namespace tmx {
      *
      * @return the name of the tileset
      */
-    const std::string& getName() const {
+    const std::string& getName() const noexcept {
       return m_name;
     }
 
@@ -81,7 +72,7 @@ namespace tmx {
      *
      * @return the width of the tiles
      */
-    unsigned getTileWidth() const {
+    unsigned getTileWidth() const noexcept {
       return m_tilewidth;
     }
 
@@ -90,7 +81,7 @@ namespace tmx {
      *
      * @return the height of the tiles
      */
-    unsigned getTileHeight() const {
+    unsigned getTileHeight() const noexcept {
       return m_tileheight;
     }
 
@@ -99,7 +90,7 @@ namespace tmx {
      *
      * @return the spacing between tiles (in pixels)
      */
-    unsigned getSpacing() const {
+    unsigned getSpacing() const noexcept {
       return m_spacing;
     }
 
@@ -108,7 +99,7 @@ namespace tmx {
      *
      * @returns the margin around tiles (in pixels)
      */
-    unsigned getMargin() const {
+    unsigned getMargin() const noexcept {
       return m_margin;
     }
 
@@ -118,7 +109,7 @@ namespace tmx {
      * @param x the x coordinate of the offset
      * @param y the y coordinate of the offset
      */
-    void setOffset(int x, int y) {
+    void setOffset(int x, int y) noexcept {
       m_x = x;
       m_y = y;
     }
@@ -128,7 +119,7 @@ namespace tmx {
      *
      * @returns the x offset of the tileset (in pixels)
      */
-    int getOffsetX() const {
+    int getOffsetX() const noexcept {
       return m_x;
     }
 
@@ -137,17 +128,22 @@ namespace tmx {
      *
      * @returns the y offset of the tileset (in pixels)
      */
-    int getOffsetY() const {
+    int getOffsetY() const noexcept {
       return m_y;
     }
+    /** @} */
 
+    /**
+     * @name Image handing
+     * @{
+     */
     /**
      * @brief Set an image associated to the tileset.
      *
      * @param image the image associated to the tileset
      */
-    void setImage(Image *image) {
-      m_image = image;
+    void setImage(std::unique_ptr<Image> image) {
+      m_image = std::move(image);
     }
 
     /**
@@ -155,8 +151,8 @@ namespace tmx {
      *
      * @returns true if the tileset has an image
      */
-    bool hasImage() const {
-      return m_image != nullptr;
+    bool hasImage() const noexcept {
+      return m_image.get() != nullptr;
     }
 
     /**
@@ -164,54 +160,64 @@ namespace tmx {
      *
      * @returns the image associated to the tileset
      */
-    const Image *getImage() const {
-      return m_image;
+    const Image *getImage() const noexcept {
+      return m_image.get();
     }
+    /** @} */
 
+    /**
+     * @brief A terrain range.
+     */
+    typedef boost::transformed_range<Adaptor, const boost::iterator_range<std::vector<std::unique_ptr<Terrain>>::const_iterator>> const_terrain_range;
+
+    /**
+     * @name Terrain handling
+     * @{
+     */
     /**
      * @brief Add terrain information to the tileset.
      *
      * @param terrain the terrain information
      */
-    void addTerrain(Terrain *terrain) {
-      m_terrains.emplace_back(terrain);
+    void addTerrain(std::unique_ptr<Terrain> terrain) {
+      m_terrains.emplace_back(std::move(terrain));
     }
-
-    /**
-     * @brief A terrain range.
-     */
-    typedef boost::iterator_range<std::vector<Terrain*>::const_iterator> const_terrain_range;
 
     /**
      * @brief Get the terrains.
      *
      * @returns a terrain range
      */
-    const_terrain_range getTerrains() const {
-      return boost::make_iterator_range(m_terrains);
+    const_terrain_range getTerrains() const noexcept {
+      return boost::make_iterator_range(m_terrains) | boost::adaptors::transformed(Adaptor());
     }
+    /** @} */
 
+    /**
+     * @brief A tile iterator.
+     */
+    typedef boost::transform_iterator<Adaptor, std::vector<std::unique_ptr<Tile>>::const_iterator> const_iterator;
+
+    /**
+     * @name Tile handling
+     * @{
+     */
     /**
      * @brief Add a tile to the tileset.
      *
      * @param tile the tile
      */
-    void addTile(Tile *tile) {
-      m_tiles.emplace_back(tile);
+    void addTile(std::unique_ptr<Tile> tile) {
+      m_tiles.emplace_back(std::move(tile));
     }
-
-    /**
-     * @brief A tile iterator.
-     */
-    typedef std::vector<Tile*>::const_iterator const_iterator;
 
     /**
      * @brief Get the begin iterator on the tiles.
      *
      * @return the begin iterator on the tiles
      */
-    const_iterator begin() const {
-      return m_tiles.cbegin();
+    const_iterator begin() const noexcept {
+      return boost::make_transform_iterator<Adaptor>(m_tiles.cbegin());
     }
 
     /**
@@ -219,8 +225,8 @@ namespace tmx {
      *
      * @return the end iterator on the tiles
      */
-    const_iterator end() const {
-      return m_tiles.cend();
+    const_iterator end() const noexcept {
+      return boost::make_transform_iterator<Adaptor>(m_tiles.cend());
     }
 
     /**
@@ -229,7 +235,7 @@ namespace tmx {
      * @param id the id of the tile
      * @returns the tile
      */
-    const Tile *getTile(unsigned id) const;
+    const Tile *getTile(unsigned id) const noexcept;
 
     /**
      * @brief Get the coordinates of a tile corresponding to an id.
@@ -238,7 +244,8 @@ namespace tmx {
      * @param size the size of the image corresponding to the tile
      * @returns the coordinates in the form of a rectangle
      */
-    Rect getCoords(unsigned id, Size size) const;
+    Rect getCoords(unsigned id, Size size) const noexcept;
+    /** @} */
 
   private:
     const unsigned m_firstgid;
@@ -251,9 +258,9 @@ namespace tmx {
     int m_x;
     int m_y;
 
-    const Image *m_image;
-    std::vector<Terrain*> m_terrains;
-    std::vector<Tile*> m_tiles;
+    std::unique_ptr<Image> m_image;
+    std::vector<std::unique_ptr<Terrain>> m_terrains;
+    std::vector<std::unique_ptr<Tile>> m_tiles;
   };
 
 }

@@ -13,15 +13,15 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#include <tmx/Base.h>
+#include <tmx/Component.h>
 
 namespace tmx {
 
-  bool Base::hasProperty(const std::string& key) const {
+  bool Component::hasProperty(const std::string& key) const noexcept {
     return m_prop.count(key) > 0;
   }
 
-  const std::string& Base::getProperty(const std::string& key, const std::string& def) const {
+  const std::string& Component::getProperty(const std::string& key, const std::string& def) const noexcept {
     auto it = m_prop.find(key);
 
     if (it != m_prop.end()) {
@@ -31,7 +31,7 @@ namespace tmx {
     return def;
   }
 
-  bool Base::addProperty(const std::string& key, const std::string& value) {
+  bool Component::addProperty(const std::string& key, const std::string& value) {
 #if __cplusplus >= 201103L
     auto ret = m_prop.emplace(key, value);
 #else

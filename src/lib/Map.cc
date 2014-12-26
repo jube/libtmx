@@ -15,12 +15,14 @@
  */
 #include <tmx/Map.h>
 
+#include <boost/range/adaptor/reversed.hpp>
+
 namespace tmx {
 
-  TileSet *Map::getTileSetFromGID(unsigned gid) {
-    for (auto it = m_tilesets.rbegin(); it != m_tilesets.rend(); ++it) {
-      if ((*it)->getFirstGID() <= gid) {
-        return *it;
+  const TileSet *Map::getTileSetFromGID(unsigned gid) const noexcept {
+    for (auto tileset : getTileSets() | boost::adaptors::reversed) {
+      if (tileset->getFirstGID() <= gid) {
+        return tileset;
       }
     }
 

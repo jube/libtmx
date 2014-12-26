@@ -16,17 +16,18 @@
 #ifndef TMX_LAYER_BASE_H
 #define TMX_LAYER_BASE_H
 
-#include "Base.h"
+#include "Component.h"
 
 namespace tmx {
   class LayerVisitor;
+  class Map;
 
   /**
    * @brief A layer is a layer in the whole map.
    *
    * There are three kinds of layers: image layers, tile layers and object layers.
    */
-  class Layer : public Base {
+  class Layer : public Component {
   public:
     /**
      * @brief Layer constructor.
@@ -46,14 +47,14 @@ namespace tmx {
      *
      * @param visitor the visitor
      */
-    virtual void accept(LayerVisitor& visitor) = 0;
+    virtual void accept(const Map& map, LayerVisitor& visitor) const = 0;
 
     /**
      * @brief Get the name of the layer.
      *
      * @returns the name of the layer
      */
-    const std::string& getName() const {
+    const std::string& getName() const noexcept {
       return m_name;
     }
 
@@ -62,7 +63,7 @@ namespace tmx {
      *
      * @returns the opacity of the layer (0.0 is transparent, 1.0 is opaque)
      */
-    double getOpacity() const {
+    double getOpacity() const noexcept {
       return m_opacity;
     }
 
@@ -71,7 +72,7 @@ namespace tmx {
      *
      * @returns true if the layer is visible
      */
-    bool isVisible() const {
+    bool isVisible() const noexcept {
       return m_visible;
     }
 

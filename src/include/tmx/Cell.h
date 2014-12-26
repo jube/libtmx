@@ -37,7 +37,7 @@ namespace tmx {
      *
      * @returns the global id of the tile.
      */
-    unsigned getGID() const {
+    unsigned getGID() const noexcept {
       return m_gid;
     }
 
@@ -46,7 +46,7 @@ namespace tmx {
      *
      * @returns true if the tile must be flipped horizontally
      */
-    bool isHorizontallyFlipped() const {
+    bool isHorizontallyFlipped() const noexcept {
       return m_hflip;
     }
 
@@ -55,7 +55,7 @@ namespace tmx {
      *
      * @returns true if the tile must be flipped vertically
      */
-    bool isVerticallyFlipped() const {
+    bool isVerticallyFlipped() const noexcept {
       return m_vflip;
     }
 
@@ -64,7 +64,7 @@ namespace tmx {
      *
      * @returns true if the tile must be flipped diagonally
      */
-    bool isDiagonallyFlipped() const {
+    bool isDiagonallyFlipped() const noexcept {
       return m_dflip;
     }
 

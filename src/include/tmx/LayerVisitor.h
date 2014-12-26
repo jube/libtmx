@@ -17,6 +17,7 @@
 #define TMX_LAYER_VISITOR_H
 
 namespace tmx {
+  class Map;
   class TileLayer;
   class ObjectLayer;
   class ImageLayer;
@@ -36,21 +37,21 @@ namespace tmx {
      *
      * @param layer the tile layer
      */
-    virtual void visitTileLayer(TileLayer& layer);
+    virtual void visitTileLayer(const Map& map, const TileLayer& layer);
 
     /**
      * @brief Visit an object layer.
      *
      * @param layer the object layer
      */
-    virtual void visitObjectLayer(ObjectLayer& layer);
+    virtual void visitObjectLayer(const Map& map, const ObjectLayer& layer);
 
     /**
      * @brief Visit an image layer.
      *
      * @param layer the image layer
      */
-    virtual void visitImageLayer(ImageLayer& layer);
+    virtual void visitImageLayer(const Map& map, const ImageLayer& layer);
   };
 
 }

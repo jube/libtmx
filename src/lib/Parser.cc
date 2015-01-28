@@ -371,14 +371,14 @@ namespace tmx {
         return data;
       }
 
-      void parseComponent(const XMLElementWrapper elt, Component *base) {
-        elt.parseOneElement("properties", [base](const XMLElementWrapper elt) {
-          elt.parseManyElements("property", [base](const XMLElementWrapper elt) {
+      void parseComponent(const XMLElementWrapper elt, Component *component) {
+        elt.parseOneElement("properties", [component](const XMLElementWrapper elt) {
+          elt.parseManyElements("property", [component](const XMLElementWrapper elt) {
             std::string name = elt.getStringAttribute("name");
             assert(!name.empty());
             std::string value = elt.getStringAttribute("value");
 
-            base->addProperty(name, value);
+            component->addProperty(name, value);
           });
         });
       }

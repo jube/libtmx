@@ -153,6 +153,15 @@ namespace tmx {
     }
 
     /**
+     * @brief Tell whether this object is a chain (polygon or polyline).
+     *
+     * @returns true if the object is a chain
+     */
+    bool isChain() const noexcept {
+      return m_kind == POLYLINE || m_kind == POLYGON;
+    }
+
+    /**
      * @brief Tell whether this object is a polyline.
      *
      * @returns true if the object is a polyline

@@ -498,8 +498,8 @@ namespace tmx {
           return std::move(obj_ptr);
         }
 
-        unsigned width = elt.getUIntAttribute("width");
-        unsigned height = elt.getUIntAttribute("height");
+        unsigned width = elt.getUIntAttribute("width", Requirement::OPTIONAL);
+        unsigned height = elt.getUIntAttribute("height", Requirement::OPTIONAL);
 
         if (elt.hasChild("ellipse")) {
           auto obj_ptr = makeUnique<Ellipse>(name, type, origin, rotation, visible, width, height);

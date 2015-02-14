@@ -2,13 +2,19 @@
 
 ## `libtmx` 0.3
 
-### 0.3.0 (?? ?? 2014)
+### 0.3.0 (26 Dec 2014)
 
 - add a soname to the library
 - change the name of Base to Component
 - improve memory handling (thanks to unique_ptr)
 - add support for Tiled 0.10.0 (flip, orientation, render order)
 - change the signature in LayerVisitor
+
+### 0.3.1 ()
+
+- set width and height attribute optional for rectangle and ellipse
+- change the name of PolyBase to Chain
+- fix the offset of the tileset
 
 ## `libtmx` 0.2
 

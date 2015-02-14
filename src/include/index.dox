@@ -106,7 +106,7 @@ Third step, we draw each tile on the rendering surface.
     if (tileset->hasImage()) {
       // Tiled Qt
 
-      tmx::Image *image = tileset->getImage();
+      const tmx::Image *image = tileset->getImage();
       auto texture = getTexture(image->getSource()); // depends on the toolkit
 
       tmx::Size size = image->getSize();
@@ -117,8 +117,8 @@ Third step, we draw each tile on the rendering surface.
     } else {
       // Tiled Java
 
-      tmx::Tile *tile = tileset->getTile(gid);
-      tmx::Image *image = tile->getImage();
+      const tmx::Tile *tile = tileset->getTile(gid);
+      const tmx::Image *image = tile->getImage();
 
       auto texture = getTexture(image->getSource()); // depends on the toolkit
       drawImage(x, y, texture); // depends on the toolkit
@@ -153,7 +153,7 @@ virtual void visitObjectLayer(const tmx::Map& map, const tmx::ObjectLayer &layer
       continue;
     }
 
-    auto tile = static_cast<tmx::TileObject *>(obj);
+    auto tile = static_cast<const tmx::TileObject *>(obj);
 
     unsigned x = tile->getX();
     unsigned y = tile->getY();

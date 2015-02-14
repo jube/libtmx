@@ -104,9 +104,6 @@ private:
         offset.ry() -= rect.height;
       }
 
-      offset.rx() += tileset->getOffsetX();
-      offset.ry() += tileset->getOffsetY();
-
       painter.drawImage(origin + offset, texture, QRect(rect.x, rect.y, rect.width, rect.height));
 
     } else {

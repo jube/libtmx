@@ -35,8 +35,8 @@ namespace tmx {
     unsigned tv = id / width;
     assert(tv < height);
 
-    unsigned du = m_margin + tu * m_spacing;
-    unsigned dv = m_margin + tv * m_spacing;
+    unsigned du = m_margin + tu * m_spacing + m_x;
+    unsigned dv = m_margin + tv * m_spacing + m_y;
     assert((tu + 1) * m_tilewidth + du <= size.width);
     assert((tv + 1) * m_tileheight + dv <= size.height);
 

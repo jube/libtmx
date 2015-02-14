@@ -112,9 +112,6 @@ Third step, we draw each tile on the rendering surface.
       tmx::Size size = image->getSize();
       tmx::Rect rect = tileset->getCoords(gid, size);
 
-      x += tileset->getOffsetX();
-      y += tileset->getOffsetY();
-
       drawImage(x, y, texture, rect); // depends on the toolkit
 
     } else {

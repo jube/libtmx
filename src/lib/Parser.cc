@@ -777,6 +777,7 @@ namespace tmx {
 
         auto map_ptr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor, render_order);
         auto map = map_ptr.get();
+        parseComponent(elt, map);
 
         elt.parseManyElements("tileset", [map,this](const XMLElementWrapper elt) {
           map->addTileSet(parseTileSet(elt));

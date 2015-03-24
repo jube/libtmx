@@ -15,6 +15,7 @@
 - set width and height attribute optional for rectangle and ellipse
 - change the name of PolyBase to Chain
 - fix the offset of the tileset
+- map have properties
 
 ## `libtmx` 0.2
 

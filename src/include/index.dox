@@ -44,9 +44,9 @@ For more information, see:
 - @ref tile_rendering
 - @ref image_object_rendering
 
-# Licence
+# License
 
-This library is open source and is distributed under the [ISC licence](http://opensource.org/licenses/isc-license).
+This library is open source and is distributed under the [ISC license](http://opensource.org/licenses/isc-license).
 
 @page tile_rendering How to render tiles with libtmx?
 

@@ -10,7 +10,7 @@
 - add support for Tiled 0.10.0 (flip, orientation, render order)
 - change the signature in LayerVisitor
 
-### 0.3.1 ()
+### 0.3.1 (28 Apr 2015)
 
 - set width and height attribute optional for rectangle and ellipse
 - change the name of PolyBase to Chain

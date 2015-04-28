@@ -371,14 +371,14 @@ namespace tmx {
         return data;
       }
 
-      void parseComponent(const XMLElementWrapper elt, Component *base) {
-        elt.parseOneElement("properties", [base](const XMLElementWrapper elt) {
-          elt.parseManyElements("property", [base](const XMLElementWrapper elt) {
+      void parseComponent(const XMLElementWrapper elt, Component *component) {
+        elt.parseOneElement("properties", [component](const XMLElementWrapper elt) {
+          elt.parseManyElements("property", [component](const XMLElementWrapper elt) {
             std::string name = elt.getStringAttribute("name");
             assert(!name.empty());
             std::string value = elt.getStringAttribute("value");
 
-            base->addProperty(name, value);
+            component->addProperty(name, value);
           });
         });
       }
@@ -498,8 +498,8 @@ namespace tmx {
           return std::move(obj_ptr);
         }
 
-        unsigned width = elt.getUIntAttribute("width");
-        unsigned height = elt.getUIntAttribute("height");
+        unsigned width = elt.getUIntAttribute("width", Requirement::OPTIONAL);
+        unsigned height = elt.getUIntAttribute("height", Requirement::OPTIONAL);
 
         if (elt.hasChild("ellipse")) {
           auto obj_ptr = makeUnique<Ellipse>(name, type, origin, rotation, visible, width, height);
@@ -777,6 +777,7 @@ namespace tmx {
 
         auto map_ptr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor, render_order);
         auto map = map_ptr.get();
+        parseComponent(elt, map);
 
         elt.parseManyElements("tileset", [map,this](const XMLElementWrapper elt) {
           map->addTileSet(parseTileSet(elt));

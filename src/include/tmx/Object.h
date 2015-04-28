@@ -153,6 +153,15 @@ namespace tmx {
     }
 
     /**
+     * @brief Tell whether this object is a chain (polygon or polyline).
+     *
+     * @returns true if the object is a chain
+     */
+    bool isChain() const noexcept {
+      return m_kind == POLYLINE || m_kind == POLYGON;
+    }
+
+    /**
      * @brief Tell whether this object is a polyline.
      *
      * @returns true if the object is a polyline
@@ -320,16 +329,16 @@ namespace tmx {
   };
 
   /**
-   * @brief A "polybase" is a base class for lines with multiple points.
+   * @brief A chain is a base class for lines with multiple points.
    *
-   * There are two kinds of polybase: polylines and polygons.
+   * There are two kinds of chain: polylines and polygons.
    */
-  class PolyBase : public Object {
+  class Chain : public Object {
   public:
     /**
-     * @brief PolyBase constructor.
+     * @brief Chain constructor.
      */
-    PolyBase(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+    Chain(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
       : Object(kind, name, type, origin, rotation, visible)
     {
     }
@@ -373,13 +382,13 @@ namespace tmx {
   /**
    * @brief A polyline is an open set of lines.
    */
-  class Polyline : public PolyBase {
+  class Polyline : public Chain {
   public:
     /**
      * @brief Polyline constructor.
      */
     Polyline(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, rotation, visible)
+      : Chain(POLYLINE, name, type, origin, rotation, visible)
     {
     }
   };
@@ -387,13 +396,13 @@ namespace tmx {
   /**
    * @brief A polygon is a closed set of lines.
    */
-  class Polygon : public PolyBase {
+  class Polygon : public Chain {
   public:
     /**
      * @brief Polygon constructor.
      */
     Polygon(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
-      : PolyBase(POLYLINE, name, type, origin, rotation, visible)
+      : Chain(POLYLINE, name, type, origin, rotation, visible)
     {
     }
   };

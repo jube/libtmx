@@ -44,9 +44,9 @@ For more information, see:
 - @ref tile_rendering
 - @ref image_object_rendering
 
-# Licence
+# License
 
-This library is open source and is distributed under the [ISC licence](http://opensource.org/licenses/isc-license).
+This library is open source and is distributed under the [ISC license](http://opensource.org/licenses/isc-license).
 
 @page tile_rendering How to render tiles with libtmx?
 
@@ -106,22 +106,19 @@ Third step, we draw each tile on the rendering surface.
     if (tileset->hasImage()) {
       // Tiled Qt
 
-      tmx::Image *image = tileset->getImage();
+      const tmx::Image *image = tileset->getImage();
       auto texture = getTexture(image->getSource()); // depends on the toolkit
 
       tmx::Size size = image->getSize();
       tmx::Rect rect = tileset->getCoords(gid, size);
-
-      x += tileset->getOffsetX();
-      y += tileset->getOffsetY();
 
       drawImage(x, y, texture, rect); // depends on the toolkit
 
     } else {
       // Tiled Java
 
-      tmx::Tile *tile = tileset->getTile(gid);
-      tmx::Image *image = tile->getImage();
+      const tmx::Tile *tile = tileset->getTile(gid);
+      const tmx::Image *image = tile->getImage();
 
       auto texture = getTexture(image->getSource()); // depends on the toolkit
       drawImage(x, y, texture); // depends on the toolkit
@@ -156,7 +153,7 @@ virtual void visitObjectLayer(const tmx::Map& map, const tmx::ObjectLayer &layer
       continue;
     }
 
-    auto tile = static_cast<tmx::TileObject *>(obj);
+    auto tile = static_cast<const tmx::TileObject *>(obj);
 
     unsigned x = tile->getX();
     unsigned y = tile->getY();

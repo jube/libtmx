@@ -25,6 +25,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 
+#include "Component.h"
 #include "Layer.h"
 #include "LayerVisitor.h"
 #include "TileSet.h"
@@ -59,7 +60,7 @@ namespace tmx {
    *
    * Tilesets describe what to draw while layers describe how to draw things.
    */
-  class Map {
+  class Map : public Component {
   public:
     /**
      * @brief Map constructor.

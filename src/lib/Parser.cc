@@ -451,7 +451,7 @@ namespace tmx {
         std::string type = elt.getStringAttribute("type", Requirement::OPTIONAL);
         unsigned x = elt.getUIntAttribute("x");
         unsigned y = elt.getUIntAttribute("y");
-        double rotation = elt.getUIntAttribute("rotation", Requirement::OPTIONAL);
+        double rotation = elt.getDoubleAttribute("rotation", Requirement::OPTIONAL);
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
         Vector2u origin{x, y};

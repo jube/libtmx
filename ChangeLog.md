@@ -17,6 +17,10 @@
 - fix the offset of the tileset
 - map have properties
 
+### 0.3.2 (??)
+
+- fix a bug in the parsing of the rotation attribute
+
 ## `libtmx` 0.2
 
 ### 0.2.0 (7 Jan 2014)

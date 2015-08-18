@@ -1,5 +1,18 @@
 # ChangeLog for `libtmx`
 
+## `libtmx` 0.4
+
+### 0.4.0 (19 Aug 2015)
+
+- add support for draw order in object layer
+- add support for Tiled 0.11.0 features
+  - id for objects
+  - hexagonal orientation
+- add support for Tiled 0.13.0 features
+  - tilecount in tileset
+- fix a bug in the parsing of the rotation attribute
+
+
 ## `libtmx` 0.3
 
 ### 0.3.0 (26 Dec 2014)

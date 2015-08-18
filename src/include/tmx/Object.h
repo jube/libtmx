@@ -46,9 +46,9 @@ namespace tmx {
     /**
      * @brief Object constructor.
      */
-    Object(const Kind kind, const std::string& name, const std::string& type,
+    Object(const Kind kind, unsigned id, const std::string& name, const std::string& type,
         const Vector2u& origin, double rotation, bool visible)
-      : m_kind(kind), m_name(name), m_type(type), m_origin(origin), m_rotation(rotation), m_visible(visible)
+      : m_kind(kind), m_id(id), m_name(name), m_type(type), m_origin(origin), m_rotation(rotation), m_visible(visible)
     {
     }
 
@@ -66,6 +66,15 @@ namespace tmx {
      */
     Kind getKind() const noexcept {
       return m_kind;
+    }
+
+    /**
+     * @brief Get the id of the object.
+     *
+     * @returns the id of the object
+     */
+    unsigned getId() const noexcept {
+      return m_id;
     }
 
     /**
@@ -190,6 +199,7 @@ namespace tmx {
 
   private:
     const Kind m_kind;
+    const unsigned m_id;
     const std::string m_name;
     const std::string m_type;
     const Vector2u m_origin;
@@ -205,9 +215,9 @@ namespace tmx {
     /**
      * @brief TileObject constructor.
      */
-    TileObject(const std::string& name, const std::string& type,
+    TileObject(unsigned id, const std::string& name, const std::string& type,
         const Vector2u& origin, double rotation, bool visible, unsigned gid, bool hflip, bool vflip, bool dflip)
-      : Object(TILE, name, type, origin, rotation, visible)
+      : Object(TILE, id, name, type, origin, rotation, visible)
       , m_gid(gid), m_hflip(hflip), m_vflip(vflip), m_dflip(dflip)
     {
     }
@@ -266,9 +276,9 @@ namespace tmx {
     /**
      * @brief Boxed constructor.
      */
-    Boxed(Kind kind, const std::string& name, const std::string& type,
+    Boxed(Kind kind, unsigned id, const std::string& name, const std::string& type,
         const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
-      : Object(kind, name, type, origin, rotation, visible), m_width(width), m_height(height)
+      : Object(kind, id, name, type, origin, rotation, visible), m_width(width), m_height(height)
     {
     }
 
@@ -305,9 +315,9 @@ namespace tmx {
     /**
      * @brief Rectangle constructor.
      */
-    Rectangle(const std::string& name, const std::string& type,
+    Rectangle(unsigned id, const std::string& name, const std::string& type,
         const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
-      : Boxed(RECTANGLE, name, type, origin, rotation, visible, width, height)
+      : Boxed(RECTANGLE, id, name, type, origin, rotation, visible, width, height)
     {
     }
   };
@@ -321,9 +331,9 @@ namespace tmx {
     /**
      * @brief Ellipse constructor.
      */
-    Ellipse(const std::string& name, const std::string& type,
+    Ellipse(unsigned id, const std::string& name, const std::string& type,
         const Vector2u& origin, double rotation, bool visible, unsigned width, unsigned height)
-      : Boxed(ELLIPSE, name, type, origin, rotation, visible, width, height)
+      : Boxed(ELLIPSE, id, name, type, origin, rotation, visible, width, height)
     {
     }
   };
@@ -338,8 +348,8 @@ namespace tmx {
     /**
      * @brief Chain constructor.
      */
-    Chain(const Kind kind, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
-      : Object(kind, name, type, origin, rotation, visible)
+    Chain(const Kind kind, unsigned id, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : Object(kind, id, name, type, origin, rotation, visible)
     {
     }
 
@@ -387,8 +397,8 @@ namespace tmx {
     /**
      * @brief Polyline constructor.
      */
-    Polyline(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
-      : Chain(POLYLINE, name, type, origin, rotation, visible)
+    Polyline(unsigned id, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : Chain(POLYLINE, id, name, type, origin, rotation, visible)
     {
     }
   };
@@ -401,8 +411,8 @@ namespace tmx {
     /**
      * @brief Polygon constructor.
      */
-    Polygon(const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
-      : Chain(POLYLINE, name, type, origin, rotation, visible)
+    Polygon(unsigned id, const std::string& name, const std::string& type, const Vector2u& origin, double rotation, bool visible)
+      : Chain(POLYLINE, id, name, type, origin, rotation, visible)
     {
     }
   };

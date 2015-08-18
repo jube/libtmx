@@ -144,11 +144,11 @@ namespace tmx {
       }
 
       bool getBoolAttribute(const char *name, Requirement req = Requirement::MANDATORY, bool val = false) const {
-        unsigned zero_or_one = val ? 1 : 0;
-        int err = m_elt->QueryUnsignedAttribute(name, &zero_or_one);
-        zero_or_one = handleErrorAndReturn(name, zero_or_one, err, req);
-        assert(zero_or_one == 0 || zero_or_one == 1);
-        return zero_or_one == 1;
+        unsigned zeroOrOne = val ? 1 : 0;
+        int err = m_elt->QueryUnsignedAttribute(name, &zeroOrOne);
+        zeroOrOne = handleErrorAndReturn(name, zeroOrOne, err, req);
+        assert(zeroOrOne == 0 || zeroOrOne == 1);
+        return zeroOrOne == 1;
       }
 
       std::string getStringAttribute(const char *name, Requirement req = Requirement::MANDATORY, const char *val = "") const {
@@ -207,10 +207,10 @@ namespace tmx {
 
       // http://en.wikibooks.org/wiki/Algorithm_implementation/Miscellaneous/Base64
       std::vector<uint8_t> parseDataBase64(const std::string& input) {
-        std::string clean_input = boost::algorithm::erase_all_copy(input, "\n");
-        clean_input = boost::algorithm::erase_all_copy(clean_input, " ");
+        std::string cleanInput = boost::algorithm::erase_all_copy(input, "\n");
+        cleanInput = boost::algorithm::erase_all_copy(cleanInput, " ");
 
-        std::size_t len = clean_input.size();
+        std::size_t len = cleanInput.size();
         assert(len % 4 == 0);
 
         size_t padding = 0;
@@ -234,7 +234,7 @@ namespace tmx {
           for (int k = 0; k < 4; ++k) {
             tmp <<= 6;
 
-            char c = clean_input.at(i);
+            char c = cleanInput.at(i);
 
             if (c >= 'A' && c <= 'Z') {
               tmp |= c - 'A';
@@ -396,7 +396,7 @@ namespace tmx {
           assert(false && "Not implemented"); // TODO
         });
 
-        return makeUnique<Image>(format, current_path / source, trans, width, height);
+        return makeUnique<Image>(format, currentPath / source, trans, width, height);
       }
 
       std::unique_ptr<ImageLayer> parseImageLayer(const XMLElementWrapper elt) {
@@ -406,16 +406,16 @@ namespace tmx {
         double opacity = elt.getDoubleAttribute("opacity", Requirement::OPTIONAL, 1.0);
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
-        auto image_layer_ptr = makeUnique<ImageLayer>(name, opacity, visible);
-        auto image_layer = image_layer_ptr.get();
+        auto imageLayerPtr = makeUnique<ImageLayer>(name, opacity, visible);
+        auto imageLayer = imageLayerPtr.get();
 
-        parseComponent(elt, image_layer);
+        parseComponent(elt, imageLayer);
 
-        elt.parseOneElement("image", [image_layer,this](const XMLElementWrapper elt) {
-          image_layer->setImage(parseImage(elt));
+        elt.parseOneElement("image", [imageLayer,this](const XMLElementWrapper elt) {
+          imageLayer->setImage(parseImage(elt));
         });
 
-        return image_layer_ptr;
+        return imageLayerPtr;
       }
 
       std::vector<Vector2i> parsePoints(const std::string& points) {
@@ -457,31 +457,31 @@ namespace tmx {
         Vector2u origin{x, y};
 
         if (elt.hasChild("polygon")) {
-          auto obj_ptr = makeUnique<Polygon>(name, type, origin, rotation, visible);
-          auto obj = obj_ptr.get();
+          auto objectPtr = makeUnique<Polygon>(name, type, origin, rotation, visible);
+          auto object = objectPtr.get();
 
-          parseComponent(elt, obj);
+          parseComponent(elt, object);
 
-          elt.parseOneElement("polygon", [obj,this](const XMLElementWrapper elt) {
+          elt.parseOneElement("polygon", [object,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
-            obj->setPoints(std::move(parsePoints(points)));
+            object->setPoints(std::move(parsePoints(points)));
           });
 
-          return std::move(obj_ptr);
+          return std::move(objectPtr);
         }
 
         if (elt.hasChild("polyline")) {
-          auto obj_ptr = makeUnique<Polyline>(name, type, origin, rotation, visible);
-          auto obj = obj_ptr.get();
+          auto objectPtr = makeUnique<Polyline>(name, type, origin, rotation, visible);
+          auto object = objectPtr.get();
 
-          parseComponent(elt, obj);
+          parseComponent(elt, object);
 
-          elt.parseOneElement("polyline", [obj,this](const XMLElementWrapper elt) {
+          elt.parseOneElement("polyline", [object,this](const XMLElementWrapper elt) {
             std::string points = elt.getStringAttribute("points");
-            obj->setPoints(std::move(parsePoints(points)));
+            object->setPoints(std::move(parsePoints(points)));
           });
 
-          return std::move(obj_ptr);
+          return std::move(objectPtr);
         }
 
         if (elt.hasAttribute("gid")) {
@@ -490,32 +490,32 @@ namespace tmx {
           bool hflip, vflip, dflip;
           std::tie(hflip, vflip, dflip, gid) = decodeGID(gid);
 
-          auto obj_ptr = makeUnique<TileObject>(name, type, origin, rotation, visible, gid, hflip, vflip, dflip);
-          auto obj = obj_ptr.get();
+          auto objectPtr = makeUnique<TileObject>(name, type, origin, rotation, visible, gid, hflip, vflip, dflip);
+          auto object = objectPtr.get();
 
-          parseComponent(elt, obj);
+          parseComponent(elt, object);
 
-          return std::move(obj_ptr);
+          return std::move(objectPtr);
         }
 
         unsigned width = elt.getUIntAttribute("width", Requirement::OPTIONAL);
         unsigned height = elt.getUIntAttribute("height", Requirement::OPTIONAL);
 
         if (elt.hasChild("ellipse")) {
-          auto obj_ptr = makeUnique<Ellipse>(name, type, origin, rotation, visible, width, height);
-          auto obj = obj_ptr.get();
+          auto objectPtr = makeUnique<Ellipse>(name, type, origin, rotation, visible, width, height);
+          auto object = objectPtr.get();
 
-          parseComponent(elt, obj);
+          parseComponent(elt, object);
 
-          return std::move(obj_ptr);
+          return std::move(objectPtr);
         }
 
-        auto obj_ptr = makeUnique<Rectangle>(name, type, origin, rotation, visible, width, height);
-        auto obj = obj_ptr.get();
+        auto objectPtr = makeUnique<Rectangle>(name, type, origin, rotation, visible, width, height);
+        auto object = objectPtr.get();
 
-        parseComponent(elt, obj);
+        parseComponent(elt, object);
 
-        return std::move(obj_ptr);
+        return std::move(objectPtr);
       }
 
       std::unique_ptr<ObjectLayer> parseObjectGroup(const XMLElementWrapper elt) {
@@ -527,16 +527,16 @@ namespace tmx {
 
         std::string color = elt.getStringAttribute("color", Requirement::OPTIONAL);
 
-        auto object_group_ptr = makeUnique<ObjectLayer>(name, opacity, visible, color);
-        auto object_group = object_group_ptr.get();
+        auto objectLayerPtr = makeUnique<ObjectLayer>(name, opacity, visible, color);
+        auto objectLayer = objectLayerPtr.get();
 
-        parseComponent(elt, object_group);
+        parseComponent(elt, objectLayer);
 
-        elt.parseManyElements("object", [object_group,this](const XMLElementWrapper elt) {
-          object_group->addObject(parseObject(elt));
+        elt.parseManyElements("object", [objectLayer,this](const XMLElementWrapper elt) {
+          objectLayer->addObject(parseObject(elt));
         });
 
-        return object_group_ptr;
+        return objectLayerPtr;
       }
 
       std::unique_ptr<TileLayer> parseLayer(const XMLElementWrapper elt) {
@@ -546,12 +546,12 @@ namespace tmx {
         double opacity = elt.getDoubleAttribute("opacity", Requirement::OPTIONAL, 1.0);
         bool visible = elt.getBoolAttribute("visible", Requirement::OPTIONAL, true);
 
-        auto layer_ptr = makeUnique<TileLayer>(name, opacity, visible);
-        auto layer = layer_ptr.get();
+        auto tileLayerPtr = makeUnique<TileLayer>(name, opacity, visible);
+        auto tileLayer = tileLayerPtr.get();
 
-        parseComponent(elt, layer);
+        parseComponent(elt, tileLayer);
 
-        elt.parseOneElement("data", [layer,this](const XMLElementWrapper elt) {
+        elt.parseOneElement("data", [tileLayer,this](const XMLElementWrapper elt) {
           Format format = parseDataFormat(elt);
 
           switch (format) {
@@ -569,7 +569,7 @@ namespace tmx {
                   bool hflip, vflip, dflip;
                   std::tie(hflip, vflip, dflip, gid) = decodeGID(gid);
 
-                  layer->addCell({ gid, hflip, vflip, dflip });
+                  tileLayer->addCell({ gid, hflip, vflip, dflip });
                 }
               }
               break;
@@ -585,20 +585,20 @@ namespace tmx {
 #else
                   unsigned gid = std::strtoul(item.c_str(), nullptr, 0);
 #endif
-                  layer->addCell({ gid });
+                  tileLayer->addCell({ gid });
                 }
               }
               break;
             case Format::XML:
-              elt.parseManyElements("tile", [layer](const XMLElementWrapper elt) {
+              elt.parseManyElements("tile", [tileLayer](const XMLElementWrapper elt) {
                 unsigned gid = elt.getUIntAttribute("gid");
-                layer->addCell({ gid });
+                tileLayer->addCell({ gid });
               });
               break;
           }
         });
 
-        return layer_ptr;
+        return tileLayerPtr;
       }
 
       std::unique_ptr<Tile> parseTile(const XMLElementWrapper elt) {
@@ -627,8 +627,8 @@ namespace tmx {
 
         unsigned probability = elt.getUIntAttribute("probability", Requirement::OPTIONAL, 100);
 
-        auto tile_ptr = makeUnique<Tile>(id, terrain, probability);
-        auto tile = tile_ptr.get();
+        auto tilePtr = makeUnique<Tile>(id, terrain, probability);
+        auto tile = tilePtr.get();
 
         parseComponent(elt, tile);
 
@@ -636,7 +636,7 @@ namespace tmx {
           tile->setImage(parseImage(elt));
         });
 
-        return tile_ptr;
+        return tilePtr;
       }
 
       std::unique_ptr<Terrain> parseTerrain(const XMLElementWrapper elt) {
@@ -645,12 +645,12 @@ namespace tmx {
         std::string name = elt.getStringAttribute("name");
         unsigned tile = elt.getUIntAttribute("tile");
 
-        auto terrain_ptr = makeUnique<Terrain>(name, tile);
-        auto terrain = terrain_ptr.get();
+        auto terrainPtr = makeUnique<Terrain>(name, tile);
+        auto terrain = terrainPtr.get();
 
         parseComponent(elt, terrain);
 
-        return terrain_ptr;
+        return terrainPtr;
       }
 
       std::unique_ptr<TileSet> parseTileSetFromElement(unsigned firstgid, const XMLElementWrapper elt) {
@@ -662,65 +662,65 @@ namespace tmx {
         unsigned spacing = elt.getUIntAttribute("spacing", Requirement::OPTIONAL);
         unsigned margin = elt.getUIntAttribute("margin", Requirement::OPTIONAL);
 
-        auto tile_set_ptr = makeUnique<TileSet>(firstgid, name, tilewidth, tileheight, spacing, margin);
-        auto tile_set = tile_set_ptr.get();
+        auto tilesetPtr = makeUnique<TileSet>(firstgid, name, tilewidth, tileheight, spacing, margin);
+        auto tileset = tilesetPtr.get();
 
-        parseComponent(elt, tile_set);
+        parseComponent(elt, tileset);
 
-        elt.parseOneElement("tileoffset", [tile_set](const XMLElementWrapper elt) {
+        elt.parseOneElement("tileoffset", [tileset](const XMLElementWrapper elt) {
           int x = elt.getIntAttribute("x");
           int y = elt.getIntAttribute("y");
-          tile_set->setOffset(x, y);
+          tileset->setOffset(x, y);
         });
 
-        elt.parseOneElement("image", [tile_set,this](const XMLElementWrapper elt) {
-          tile_set->setImage(parseImage(elt));
+        elt.parseOneElement("image", [tileset,this](const XMLElementWrapper elt) {
+          tileset->setImage(parseImage(elt));
         });
 
-        elt.parseOneElement("terraintypes", [tile_set,this](const XMLElementWrapper elt) {
-          elt.parseManyElements("terrain", [tile_set,this](const XMLElementWrapper elt) {
-            tile_set->addTerrain(parseTerrain(elt));
+        elt.parseOneElement("terraintypes", [tileset,this](const XMLElementWrapper elt) {
+          elt.parseManyElements("terrain", [tileset,this](const XMLElementWrapper elt) {
+            tileset->addTerrain(parseTerrain(elt));
           });
         });
 
-        elt.parseManyElements("tile", [tile_set,this](const XMLElementWrapper elt) {
-          tile_set->addTile(parseTile(elt));
+        elt.parseManyElements("tile", [tileset,this](const XMLElementWrapper elt) {
+          tileset->addTile(parseTile(elt));
         });
 
-        return tile_set_ptr;
+        return tilesetPtr;
       }
 
       std::unique_ptr<TileSet> parseTileSetFromFile(unsigned firstgid, const std::string& filename) {
-        fs::path tileset_path = current_path / filename;
+        fs::path tilesetPath = currentPath / filename;
 
         tinyxml2::XMLDocument doc;
-        int err = doc.LoadFile(tileset_path.string().c_str());
+        int err = doc.LoadFile(tilesetPath.string().c_str());
 
         if (doc.Error()) {
-          std::clog << "Error! Unable to load a TSX file: " << tileset_path << '\n';
+          std::clog << "Error! Unable to load a TSX file: " << tilesetPath << '\n';
           assert(err != tinyxml2::XML_NO_ERROR);
           return nullptr;
         }
 
         assert(err == tinyxml2::XML_NO_ERROR);
 
-        current_path = tileset_path.parent_path();
+        currentPath = tilesetPath.parent_path();
 
         const tinyxml2::XMLElement *elt = doc.RootElement();
 
         if (elt->Attribute("firstgid")) {
-          std::clog << "Warning! Attribute 'firstgid' present in a TSX file: " << tileset_path << '\n';
+          std::clog << "Warning! Attribute 'firstgid' present in a TSX file: " << tilesetPath << '\n';
         }
 
         if (elt->Attribute("source")) {
-          std::clog << "Warning! Attribute 'source' present in a TSX file: " << tileset_path << '\n';
+          std::clog << "Warning! Attribute 'source' present in a TSX file: " << tilesetPath << '\n';
         }
 
-        auto ret = parseTileSetFromElement(firstgid, elt);
+        auto tileset = parseTileSetFromElement(firstgid, elt);
 
-        current_path = map_path.parent_path();
+        currentPath = mapPath.parent_path();
 
-        return ret;
+        return tileset;
       }
 
       std::unique_ptr<TileSet> parseTileSet(const XMLElementWrapper elt) {
@@ -759,24 +759,24 @@ namespace tmx {
         unsigned tileheight = elt.getUIntAttribute("tileheight");
         std::string bgcolor = elt.getStringAttribute("backgroundcolor", Requirement::OPTIONAL, "#FFFFFF");
 
-        RenderOrder render_order = RenderOrder::RIGHT_DOWN; // default value
+        RenderOrder renderOrder = RenderOrder::RIGHT_DOWN; // default value
 
         if (elt.hasAttribute("renderorder")) {
           if (elt.isEnumAttribute("renderorder", "right-down")) {
-            render_order = RenderOrder::RIGHT_DOWN;
+            renderOrder = RenderOrder::RIGHT_DOWN;
           } else if (elt.isEnumAttribute("renderorder", "right-up")) {
-            render_order = RenderOrder::RIGHT_UP;
+            renderOrder = RenderOrder::RIGHT_UP;
           } else if (elt.isEnumAttribute("renderorder", "left-down")) {
-            render_order = RenderOrder::LEFT_DOWN;
+            renderOrder = RenderOrder::LEFT_DOWN;
           } else if (elt.isEnumAttribute("renderorder", "left-up")) {
-            render_order = RenderOrder::LEFT_UP;
+            renderOrder = RenderOrder::LEFT_UP;
           } else {
             std::clog << "Error! Wrong render order string: '" << elt.getStringAttribute("renderorder") << "'\n";
           }
         }
 
-        auto map_ptr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor, render_order);
-        auto map = map_ptr.get();
+        auto mapPtr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor, renderOrder);
+        auto map = mapPtr.get();
         parseComponent(elt, map);
 
         elt.parseManyElements("tileset", [map,this](const XMLElementWrapper elt) {
@@ -793,34 +793,34 @@ namespace tmx {
           }
         });
 
-        return map_ptr;
+        return mapPtr;
       }
 
-      Parser(const boost::filesystem::path& filename) : map_path(filename) { }
+      Parser(const boost::filesystem::path& filename) : mapPath(filename) { }
 
       std::unique_ptr<Map> parse() {
-        if (!fs::is_regular_file(map_path)) {
-          std::clog << "Error! Unknown TMX file: " << map_path << '\n';
+        if (!fs::is_regular_file(mapPath)) {
+          std::clog << "Error! Unknown TMX file: " << mapPath << '\n';
           return nullptr;
         }
 
         tinyxml2::XMLDocument doc;
-        int err = doc.LoadFile(map_path.string().c_str());
+        int err = doc.LoadFile(mapPath.string().c_str());
 
         if (doc.Error()) {
           assert(err != tinyxml2::XML_NO_ERROR);
-          std::clog << "Error! Unable to load the TMX file: " << map_path << '\n';
+          std::clog << "Error! Unable to load the TMX file: " << mapPath << '\n';
           return nullptr;
         }
 
-        current_path = map_path.parent_path();
+        currentPath = mapPath.parent_path();
 
         assert(err == tinyxml2::XML_NO_ERROR);
         return parseMap(doc.RootElement());
       }
 
-      fs::path map_path;
-      fs::path current_path;
+      fs::path mapPath;
+      fs::path currentPath;
     };
 
   }

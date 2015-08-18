@@ -14,8 +14,8 @@ namespace fs = boost::filesystem;
 
 class LayerRenderer : public tmx::LayerVisitor {
 public:
-  void renderMap(const fs::path& map_path) {
-    auto map = tmx::Map::parseFile(map_path);
+  void renderMap(const fs::path& mapPath) {
+    auto map = tmx::Map::parseFile(mapPath);
 
     if (!map) {
       return;
@@ -90,11 +90,11 @@ private:
       if (image->hasSize()) {
         size = image->getSize();
       } else {
-        QSize texture_size = texture.size();
-        assert(texture_size.width() >= 0);
-        assert(texture_size.height() >= 0);
-        size.width = texture_size.width();
-        size.height = texture_size.height();
+        QSize textureSize = texture.size();
+        assert(textureSize.width() >= 0);
+        assert(textureSize.height() >= 0);
+        size.width = textureSize.width();
+        size.height = textureSize.height();
       }
 
       tmx::Rect rect = tileset->getCoords(gid, size);
@@ -181,10 +181,10 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  fs::path map_path(argv[1]);
+  fs::path mapPath(argv[1]);
 
   LayerRenderer renderer;
-  renderer.renderMap(map_path);
+  renderer.renderMap(mapPath);
 
   return 0;
 }

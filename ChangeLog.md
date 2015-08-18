@@ -1,5 +1,15 @@
 # ChangeLog for `libtmx`
 
+## `libtmx` 0.4
+
+### 0.4.0 (??)
+
+- add support for Tiled 0.11.0 features
+  - id for objects
+  - hexagonal orientation
+- fix a bug in the parsing of the rotation attribute
+
+
 ## `libtmx` 0.3
 
 ### 0.3.0 (26 Dec 2014)
@@ -16,10 +26,6 @@
 - change the name of PolyBase to Chain
 - fix the offset of the tileset
 - map have properties
-
-### 0.3.2 (??)
-
-- fix a bug in the parsing of the rotation attribute
 
 ## `libtmx` 0.2
 

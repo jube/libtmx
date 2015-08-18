@@ -447,6 +447,7 @@ namespace tmx {
       std::unique_ptr<Object> parseObject(const XMLElementWrapper elt) {
         assert(elt.is("object"));
 
+        unsigned id = elt.getUIntAttribute("id", Requirement::OPTIONAL);
         std::string name = elt.getStringAttribute("name", Requirement::OPTIONAL);
         std::string type = elt.getStringAttribute("type", Requirement::OPTIONAL);
         unsigned x = elt.getUIntAttribute("x");
@@ -457,7 +458,7 @@ namespace tmx {
         Vector2u origin{x, y};
 
         if (elt.hasChild("polygon")) {
-          auto objectPtr = makeUnique<Polygon>(name, type, origin, rotation, visible);
+          auto objectPtr = makeUnique<Polygon>(id, name, type, origin, rotation, visible);
           auto object = objectPtr.get();
 
           parseComponent(elt, object);
@@ -471,7 +472,7 @@ namespace tmx {
         }
 
         if (elt.hasChild("polyline")) {
-          auto objectPtr = makeUnique<Polyline>(name, type, origin, rotation, visible);
+          auto objectPtr = makeUnique<Polyline>(id, name, type, origin, rotation, visible);
           auto object = objectPtr.get();
 
           parseComponent(elt, object);
@@ -490,7 +491,7 @@ namespace tmx {
           bool hflip, vflip, dflip;
           std::tie(hflip, vflip, dflip, gid) = decodeGID(gid);
 
-          auto objectPtr = makeUnique<TileObject>(name, type, origin, rotation, visible, gid, hflip, vflip, dflip);
+          auto objectPtr = makeUnique<TileObject>(id, name, type, origin, rotation, visible, gid, hflip, vflip, dflip);
           auto object = objectPtr.get();
 
           parseComponent(elt, object);
@@ -502,7 +503,7 @@ namespace tmx {
         unsigned height = elt.getUIntAttribute("height", Requirement::OPTIONAL);
 
         if (elt.hasChild("ellipse")) {
-          auto objectPtr = makeUnique<Ellipse>(name, type, origin, rotation, visible, width, height);
+          auto objectPtr = makeUnique<Ellipse>(id, name, type, origin, rotation, visible, width, height);
           auto object = objectPtr.get();
 
           parseComponent(elt, object);
@@ -510,7 +511,7 @@ namespace tmx {
           return std::move(objectPtr);
         }
 
-        auto objectPtr = makeUnique<Rectangle>(name, type, origin, rotation, visible, width, height);
+        auto objectPtr = makeUnique<Rectangle>(id, name, type, origin, rotation, visible, width, height);
         auto object = objectPtr.get();
 
         parseComponent(elt, object);
@@ -749,8 +750,10 @@ namespace tmx {
           orientation = Orientation::ISOMETRIC;
         } else if (elt.isEnumAttribute("orientation", "staggered")) {
           orientation = Orientation::STAGGERED;
+        } else if (elt.isEnumAttribute("orientation", "hexagonal")) {
+          orientation = Orientation::HEXAGONAL;
         } else {
-          std::clog << "Error! Wrong orientation string\n";
+          std::clog << "Error! Wrong orientation string: '" << elt.getStringAttribute("orientation") << "'\n";
         }
 
         unsigned width = elt.getUIntAttribute("width");
@@ -775,7 +778,37 @@ namespace tmx {
           }
         }
 
-        auto mapPtr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor, renderOrder);
+        unsigned hexSideLength = elt.getUIntAttribute("hexsidelength", Requirement::OPTIONAL);
+
+        StaggerAxis axis = StaggerAxis::Y;
+
+        if (elt.hasAttribute("staggeraxis")) {
+          if (elt.isEnumAttribute("staggeraxis", "x")) {
+            axis = StaggerAxis::X;
+          } else if (elt.isEnumAttribute("staggeraxis", "y")) {
+            axis = StaggerAxis::Y;
+          } else {
+            std::clog << "Error! Wrong stagger axis string: '" << elt.getStringAttribute("staggeraxis") << "'\n";
+          }
+        }
+
+
+        StaggerIndex index = StaggerIndex::ODD;
+
+        if (elt.hasAttribute("staggerindex")) {
+          if (elt.isEnumAttribute("staggerindex", "odd")) {
+            index = StaggerIndex::ODD;
+          } else if (elt.isEnumAttribute("staggerindex", "even")) {
+            index = StaggerIndex::EVEN;
+          } else {
+            std::clog << "Error! Wrong stagger index string: '" << elt.getStringAttribute("staggerindex") << "'\n";
+          }
+        }
+
+        unsigned nextObjectId = elt.getUIntAttribute("nextobjectid", Requirement::OPTIONAL);
+
+        auto mapPtr = makeUnique<Map>(version, orientation, width, height, tilewidth, tileheight, bgcolor, renderOrder,
+            hexSideLength, axis, index, nextObjectId);
         auto map = mapPtr.get();
         parseComponent(elt, map);
 

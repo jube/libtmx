@@ -43,6 +43,23 @@ namespace tmx {
     ORTHOGONAL, /**< Orthogonal orientation */
     ISOMETRIC,  /**< Isometric orientation */
     STAGGERED,  /**< Staggered orientation */
+    HEXAGONAL,  /**< Hexagonal orientation */
+  };
+
+  /**
+   * @brief Stagger index of the hexagonal map.
+   */
+  enum class StaggerIndex {
+    ODD,
+    EVEN,
+  };
+
+  /**
+   * @brief Stagger axis of the hexagonal map.
+   */
+  enum class StaggerAxis {
+    X,
+    Y,
   };
 
   /**
@@ -66,9 +83,12 @@ namespace tmx {
      * @brief Map constructor.
      */
     Map(const std::string version, Orientation orientation, unsigned width, unsigned height,
-        unsigned tilewidth, unsigned tileheight, const std::string& bgcolor, RenderOrder render_order)
+        unsigned tilewidth, unsigned tileheight, const std::string& bgcolor, RenderOrder renderOrder,
+        unsigned hexSideLength, StaggerAxis axis, StaggerIndex index, unsigned nextObjectId)
       : m_version(version), m_orientation(orientation), m_width(width), m_height(height),
-        m_tilewidth(tilewidth), m_tileheight(tileheight), m_bgcolor(bgcolor), m_render_order(render_order)
+        m_tilewidth(tilewidth), m_tileheight(tileheight), m_bgcolor(bgcolor), m_renderOrder(renderOrder),
+        m_hexSideLength(hexSideLength), m_axis(axis), m_index(index), m_nextObjectId(nextObjectId)
+
     {
     }
 
@@ -145,8 +165,51 @@ namespace tmx {
      * @returns the render order
      */
     RenderOrder getRenderOrder() const noexcept {
-      return m_render_order;
+      return m_renderOrder;
     }
+
+    /**
+     * @brief Get the hexagonal side length.
+     *
+     * Only relevant for hexagonal maps.
+     *
+     * @returns the hexagonal side length
+     */
+    unsigned getHexSideLength() const noexcept {
+      return m_hexSideLength;
+    }
+
+    /**
+     * @brief Get the staggered axis.
+     *
+     * Only relevant for staggered and hexagonal maps.
+     *
+     * @returns the staggered axis
+     */
+    StaggerAxis getStaggerAxis() const noexcept {
+      return m_axis;
+    }
+
+    /**
+     * @brief Get the staggered index.
+     *
+     * Only relevant for staggered and hexagonal maps.
+     *
+     * @returns the staggered index
+     */
+    StaggerIndex getStaggerIndex() const noexcept {
+      return m_index;
+    }
+
+    /**
+     * @brief Get the next object id.
+     *
+     * @returns the next object id.
+     */
+    unsigned getNextObjectId() const noexcept {
+      return m_nextObjectId;
+    }
+
     /** @} */
 
     /**
@@ -254,7 +317,13 @@ namespace tmx {
 
     const std::string m_bgcolor;
 
-    const RenderOrder m_render_order;
+    const RenderOrder m_renderOrder;
+
+    const unsigned m_hexSideLength;
+    const StaggerAxis m_axis;
+    const StaggerIndex m_index;
+
+    const unsigned m_nextObjectId;
 
     std::vector<std::unique_ptr<TileSet>> m_tilesets;
     std::vector<std::unique_ptr<Layer>> m_layers;

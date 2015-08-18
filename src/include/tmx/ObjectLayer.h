@@ -27,6 +27,14 @@
 namespace tmx {
 
   /**
+   * @brief the order in which the objects should be drawn.
+   */
+  enum class DrawOrder {
+    TOP_DOWN, /**< Top-down order (default) */
+    INDEX,    /**< Index order */
+  };
+
+  /**
    * @brief An object layer is a layers composed of objects.
    *
    * An object layer is called object group in the TMX format.
@@ -36,8 +44,8 @@ namespace tmx {
     /**
      * @brief ObjectLayer constructor.
      */
-    ObjectLayer(const std::string& name, double opacity, bool visible, const std::string& color)
-      : Layer(name, opacity, visible), m_color(color)
+    ObjectLayer(const std::string& name, double opacity, bool visible, const std::string& color, DrawOrder order)
+      : Layer(name, opacity, visible), m_color(color), m_order(order)
     {
     }
 
@@ -86,6 +94,7 @@ namespace tmx {
 
   private:
     const std::string m_color;
+    const DrawOrder m_order;
     std::vector<std::unique_ptr<Object>> m_objects;
   };
 

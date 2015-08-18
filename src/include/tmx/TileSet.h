@@ -39,9 +39,11 @@ namespace tmx {
     /**
      * @brief TileSet constructor.
      */
-    TileSet(unsigned firstgid, const std::string& name, unsigned tilewidth, unsigned tileheight, unsigned spacing, unsigned margin)
-      : m_firstgid(firstgid), m_name(name), m_tilewidth(tilewidth), m_tileheight(tileheight), m_spacing(spacing), m_margin(margin),
-      m_x(0), m_y(0), m_image(nullptr)
+    TileSet(unsigned firstgid, const std::string& name, unsigned tilewidth, unsigned tileheight,
+        unsigned spacing, unsigned margin, unsigned tilecount)
+      : m_firstgid(firstgid), m_name(name), m_tilewidth(tilewidth), m_tileheight(tileheight),
+        m_spacing(spacing), m_margin(margin), m_tilecount(tilecount),
+        m_x(0), m_y(0), m_image(nullptr)
     {
     }
 
@@ -101,6 +103,15 @@ namespace tmx {
      */
     unsigned getMargin() const noexcept {
       return m_margin;
+    }
+
+    /**
+     * @brief Get the tile count
+     *
+     * @returns the tile count
+     */
+    unsigned getTileCount() const noexcept {
+      return m_tilecount;
     }
 
     /**
@@ -254,6 +265,7 @@ namespace tmx {
     const unsigned m_tileheight;
     const unsigned m_spacing;
     const unsigned m_margin;
+    const unsigned m_tilecount;
 
     int m_x;
     int m_y;

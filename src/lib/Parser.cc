@@ -528,7 +528,19 @@ namespace tmx {
 
         std::string color = elt.getStringAttribute("color", Requirement::OPTIONAL);
 
-        auto objectLayerPtr = makeUnique<ObjectLayer>(name, opacity, visible, color);
+        DrawOrder order = DrawOrder::TOP_DOWN;
+
+        if (elt.hasAttribute("draworder")) {
+          if (elt.isEnumAttribute("draworder", "topdown")) {
+            order = DrawOrder::TOP_DOWN;
+          } else if (elt.isEnumAttribute("draworder", "index")) {
+            order = DrawOrder::INDEX;
+          } else {
+            std::clog << "Error! Wrong draw order string: '" << elt.getStringAttribute("draworder") << "'\n";
+          }
+        }
+
+        auto objectLayerPtr = makeUnique<ObjectLayer>(name, opacity, visible, color, order);
         auto objectLayer = objectLayerPtr.get();
 
         parseComponent(elt, objectLayer);
@@ -662,8 +674,9 @@ namespace tmx {
         unsigned tileheight = elt.getUIntAttribute("tileheight", Requirement::OPTIONAL);
         unsigned spacing = elt.getUIntAttribute("spacing", Requirement::OPTIONAL);
         unsigned margin = elt.getUIntAttribute("margin", Requirement::OPTIONAL);
+        unsigned tilecount = elt.getUIntAttribute("tilecount", Requirement::OPTIONAL);
 
-        auto tilesetPtr = makeUnique<TileSet>(firstgid, name, tilewidth, tileheight, spacing, margin);
+        auto tilesetPtr = makeUnique<TileSet>(firstgid, name, tilewidth, tileheight, spacing, margin, tilecount);
         auto tileset = tilesetPtr.get();
 
         parseComponent(elt, tileset);

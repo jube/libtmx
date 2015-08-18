@@ -4,6 +4,15 @@
 
 `libtmx` is not meant to modify TMX files but to read TMX files.
 
+## Supported versions
+
+| TMX version | `libtmx` version |
+|-------------|------------------|
+| 0.10        | 0.3.0            |
+| 0.11        | 0.4.0            |
+| 0.12        | 0.4.0            |
+| 0.13        | 0.4.0            |
+
 ## Requirements
 
 `libtmx` is written in C++11 so you need a C++11 compiler like [Clang](http://clang.llvm.org/) or [GCC](http://gcc.gnu.org/).

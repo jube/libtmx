@@ -2,7 +2,7 @@
 
 ## `libtmx` 0.4
 
-### 0.4.0 (??)
+### 0.4.0 (19 Aug 2015)
 
 - add support for draw order in object layer
 - add support for Tiled 0.11.0 features
